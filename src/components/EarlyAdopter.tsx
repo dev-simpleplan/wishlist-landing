@@ -24,7 +24,7 @@ const EarlyAdopter = () => (
             <Button size="lg" className="gap-2 text-base">
               Install Now <ArrowRight className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="lg" className="gap-2 text-base border-brand-cream/30 text-brand-cream hover:bg-brand-cream/10">
+            <Button variant="secondary" size="lg" className="gap-2 text-base border-brand-cream/30 text-brand-cream hover:bg-brand-cream/10">
               Book a Demo
             </Button>
           </div>
