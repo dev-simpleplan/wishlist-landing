@@ -21,12 +21,26 @@ const EarlyAdopter = () => (
             Join our early access program and get personalized onboarding, priority support, and white-glove setup to launch with confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://apps.shopify.com/wishlistsuite" target="_blank" size="lg" className="gap-2 text-base">
+            <Button
+            asChild
+            size="lg"
+            variant="secondary"
+            className="gap-2 text-base"
+          >
+            <a href="https://apps.shopify.com/wishlistsuite" target="_blank" rel="noreferrer">
               Install Now <ArrowRight className="w-4 h-4" />
             </a>
-            <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" variant="secondary" size="lg" className="gap-2 text-base border-brand-cream/30 text-brand-cream hover:bg-brand-cream/10">
+          </Button>
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+          >
+            <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
               Book a Demo
             </a>
+          </Button>
           </div>
         </div>
       </div>
