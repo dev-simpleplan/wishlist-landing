@@ -36,6 +36,14 @@ npm i
 npm run dev
 ```
 
+### Contact form email setup
+
+To enable email delivery from the `/contact` page:
+
+1. Copy `.env.example` to `.env`
+2. Set `VITE_CONTACT_RECIPIENT_EMAIL` to the inbox that should receive form submissions
+3. (Optional) set `VITE_CONTACT_FORM_ENDPOINT` if you prefer your own backend/webhook over FormSubmit
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/wishlistsuite-logo.svg";
 
 const FooterCTA = () => (
@@ -45,8 +46,8 @@ const FooterCTA = () => (
           </div>
           <div className="flex gap-8 text-sm text-brand-cream/60">
             <a href="#" className="hover:text-brand-cream transition-colors">Privacy</a>
-            <a href="#" className="hover:text-brand-cream transition-colors">Terms</a>
-            <a href="#" className="hover:text-brand-cream transition-colors">Support</a>
+            <Link to="/faq" className="hover:text-brand-cream transition-colors">FAQ</Link>
+            <Link to="/contact" className="hover:text-brand-cream transition-colors">Support</Link>
           </div>
           <p className="text-sm text-brand-cream/40">
             © 2026 Wishlistsuite. All rights reserved.

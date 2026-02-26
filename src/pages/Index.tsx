@@ -1,12 +1,10 @@
 import NavHeader from "@/components/NavHeader";
 import HeroSection from "@/components/HeroSection";
 import TrustBar from "@/components/TrustBar";
+import WhySection from "@/components/WhySection";
 import EverywhereStrategy from "@/components/EverywhereStrategy";
-import ProductPageFeature from "@/components/ProductPageFeature";
-import CartRescue from "@/components/CartRescue";
-import CollectionMultiList from "@/components/CollectionMultiList";
-import CustomizationSection from "@/components/CustomizationSection";
-import DashboardSection from "@/components/DashboardSection";
+import FeaturesBento from "@/components/FeaturesBento";
+import ReviewsSection from "@/components/ReviewsSection";
 import EarlyAdopter from "@/components/EarlyAdopter";
 import FAQSection from "@/components/FAQSection";
 import FooterCTA from "@/components/FooterCTA";
@@ -18,12 +16,10 @@ const Index = () => {
       <main>
         <HeroSection />
         <TrustBar />
+        <WhySection />
         <EverywhereStrategy />
-        <ProductPageFeature />
-        <CartRescue />
-        <CollectionMultiList />
-        <CustomizationSection />
-        <DashboardSection />
+        <FeaturesBento />
+        <ReviewsSection />
         <EarlyAdopter />
         <FAQSection />
         <FooterCTA />

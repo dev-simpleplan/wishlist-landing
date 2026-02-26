@@ -3,6 +3,14 @@ import { UserRound, ArrowRight } from "lucide-react";
 import heroPhone from "@/assets/hero-phone.png";
 
 const HeroSection = () => {
+  const tickerItems = [
+    "Guest Wishlist Support",
+    "One-Click Save to Wishlist",
+    "Live Wishlist Counts",
+    "Shareable Wishlists",
+    "Shopify 2.0 Compatible",
+  ];
+
   return (
     <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 overflow-hidden">
       {/* Background decoration */}
@@ -55,6 +63,19 @@ const HeroSection = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 left-0 w-full px-4 md:px-6">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-full border border-border/70 bg-card/85 backdrop-blur-sm">
+          <div className="flex w-max animate-ticker-ltr py-2">
+            {[...tickerItems, ...tickerItems].map((item, index) => (
+              <div key={`${item}-${index}`} className="mx-5 flex items-center gap-5 whitespace-nowrap text-sm font-medium text-foreground/80">
+                <span>{item}</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-green/70" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

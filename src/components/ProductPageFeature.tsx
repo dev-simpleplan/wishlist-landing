@@ -1,4 +1,4 @@
-import heroPhone from "@/assets/hero-phone.png";
+import thirdSectionImg from "@/assets/3rd Section.png";
 import { Heart } from "lucide-react";
 
 const ProductPageFeature = () => (
@@ -9,9 +9,9 @@ const ProductPageFeature = () => (
         <div className="order-2 md:order-1">
           <div className="bg-primary/10 rounded-3xl p-8 relative">
             <img
-              src={heroPhone}
+              src={thirdSectionImg}
               alt="Product page with wishlist counts"
-              className="rounded-2xl shadow-lg w-72 mx-auto"
+              className="rounded-2xl shadow-lg w-full max-w-2xl mx-auto"
             />
             {/* Floating count */}
             <div className="absolute top-6 right-6 bg-card rounded-xl shadow-lg px-4 py-3 flex items-center gap-2 border border-border">

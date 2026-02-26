@@ -1,19 +1,28 @@
 import { useState } from "react";
 import collectionImg from "@/assets/collection-page.png";
-import heroPhone from "@/assets/hero-phone.png";
+import homepageImg from "@/assets/Homepage.png";
 
 const EverywhereStrategy = () => {
   const [activeTab, setActiveTab] = useState<"homepage" | "collection">("homepage");
-  const previewImage = activeTab === "homepage" ? heroPhone : collectionImg;
+  const previewImage = activeTab === "homepage" ? homepageImg : collectionImg;
 
   return (
-    <section id="features" className="scroll-mt-28 py-20 md:py-32">
+    <section id="features" className="scroll-mt-28 pt-12 pb-20 md:pt-16 md:pb-32">
       <div className="container mx-auto px-4">
+        <div className="mb-8 md:mb-10">
+          <p className="inline-flex items-center rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-foreground">
+            Section 3: Feature Experience
+          </p>
+          <h2 className="mt-4 text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
+            See How WishlistSuite Works Across the Store
+          </h2>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
+            <h3 className="text-2xl md:text-4xl font-heading font-bold text-foreground leading-tight">
               Let Shoppers Save From Every Page
-            </h2>
+            </h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Drop a heart wherever shoppers browse — homepage, collections, or product pages. With full Shopify 2.0 compatibility, responsive design, and easy styling, it looks and feels completely native.
             </p>

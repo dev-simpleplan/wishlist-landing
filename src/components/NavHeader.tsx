@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/wishlistsuite-logo.svg";
 
 const NavHeader = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -13,9 +15,15 @@ const NavHeader = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const links = [
-    { label: "Features", href: "#features" },
-    { label: "FAQ", href: "#faq" },
+    { label: "Home", href: "/" },
+    { label: "Features", href: "/#features" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (
@@ -25,15 +33,13 @@ const NavHeader = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
-        {/* Logo */}
-        <a href="#top" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Wishlistsuite logo" className="w-9 h-9 object-contain" />
           <span className="font-heading text-xl font-bold text-foreground">
             Wishlistsuite
           </span>
-        </a>
+        </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {links.map((link) => (
             <a
@@ -46,7 +52,6 @@ const NavHeader = () => {
           ))}
         </nav>
 
-        {/* CTAs */}
         <div className="hidden md:flex items-center gap-3">
           <Button asChild variant="outline" size="sm">
             <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
@@ -60,7 +65,6 @@ const NavHeader = () => {
           </Button>
         </div>
 
-        {/* Mobile toggle */}
         <button
           type="button"
           className="md:hidden text-foreground"
@@ -73,7 +77,6 @@ const NavHeader = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div
           id="mobile-nav-menu"
