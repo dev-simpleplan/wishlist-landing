@@ -34,7 +34,7 @@ const EarlyAdopter = () => (
           <Button
             asChild
             size="lg"
-            variant="outline"
+            variant="secondary"
             className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
           >
             <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
