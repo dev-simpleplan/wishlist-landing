@@ -31,7 +31,7 @@ const EarlyAdopter = () => (
               Install Now <ArrowRight className="w-4 h-4" />
             </a>
           </Button>
-          <Button variant="secondary" size="lg" className="gap-2 text-base border-brand-cream/30 text-brand-cream hover:bg-brand-cream/10">
+          <Button asChild size="lg" className="gap-2">
             <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
               Book a Demo
             </a>
