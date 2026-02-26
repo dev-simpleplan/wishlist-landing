@@ -35,7 +35,7 @@ const EarlyAdopter = () => (
             asChild
             size="lg"
             variant="outline"
-            className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+            className="gap-2 text-base border-brand-cream/30 text-brand-cream hover:bg-brand-cream/10"
           >
             <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
               Book a Demo
