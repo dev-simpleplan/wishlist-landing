@@ -41,8 +41,11 @@ npm run dev
 To enable email delivery from the `/contact` page:
 
 1. Copy `.env.example` to `.env`
-2. Set `VITE_CONTACT_RECIPIENT_EMAIL` to the inbox that should receive form submissions
-3. (Optional) set `VITE_CONTACT_FORM_ENDPOINT` if you prefer your own backend/webhook over FormSubmit
+2. Set `VITE_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` from Cloudflare Turnstile
+3. Set `CONTACT_RECIPIENT_EMAIL` to the inbox that should receive form submissions
+4. (Optional) set `CONTACT_FORM_ENDPOINT` if you prefer your own backend/webhook over FormSubmit
+
+This project now submits contact requests to `/api/contact`, where captcha verification and basic anti-spam checks are applied before forwarding to email.
 
 **Edit a file directly in GitHub**
 
