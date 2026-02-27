@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, Mail, MessageSquare, Store } from "lucide-react";
 import NavHeader from "@/components/NavHeader";
@@ -18,33 +18,11 @@ type ContactFormData = {
 
 const STORAGE_KEY = "wishlistsuite_contact_submissions";
 const MAX_SAVED_SUBMISSIONS = 100;
-const TURNSTILE_SCRIPT_ID = "cf-turnstile-script";
-const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (
-        container: HTMLElement | string,
-        options: {
-          sitekey: string;
-          callback?: (token: string) => void;
-          "expired-callback"?: () => void;
-          "error-callback"?: () => void;
-          theme?: "light" | "dark" | "auto";
-        },
-      ) => string | number;
-      reset: (widgetId?: string | number) => void;
-      remove: (widgetId: string | number) => void;
-    };
-  }
-}
 
 const Contact = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
   const [formStartedAt] = useState(() => Date.now());
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [formData, setFormData] = useState<ContactFormData>({
@@ -53,67 +31,6 @@ const Contact = () => {
     storeName: "",
     message: "",
   });
-  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
-  const turnstileWidgetIdRef = useRef<string | number | null>(null);
-
-  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
-
-  useEffect(() => {
-    if (!turnstileSiteKey || !turnstileContainerRef.current) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const mountWidget = () => {
-      if (cancelled || !window.turnstile || !turnstileContainerRef.current) {
-        return;
-      }
-
-      if (turnstileWidgetIdRef.current !== null) {
-        return;
-      }
-
-      turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
-        sitekey: turnstileSiteKey,
-        callback: (token: string) => setCaptchaToken(token),
-        "expired-callback": () => setCaptchaToken(""),
-        "error-callback": () => setCaptchaToken(""),
-        theme: "light",
-      });
-    };
-
-    const loadScriptAndMount = async () => {
-      if (window.turnstile) {
-        mountWidget();
-        return;
-      }
-
-      const existing = document.getElementById(TURNSTILE_SCRIPT_ID) as HTMLScriptElement | null;
-      if (existing) {
-        existing.addEventListener("load", mountWidget, { once: true });
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.id = TURNSTILE_SCRIPT_ID;
-      script.src = TURNSTILE_SCRIPT_SRC;
-      script.async = true;
-      script.defer = true;
-      script.addEventListener("load", mountWidget, { once: true });
-      document.head.appendChild(script);
-    };
-
-    void loadScriptAndMount();
-
-    return () => {
-      cancelled = true;
-      if (window.turnstile && turnstileWidgetIdRef.current !== null) {
-        window.turnstile.remove(turnstileWidgetIdRef.current);
-        turnstileWidgetIdRef.current = null;
-      }
-    };
-  }, [turnstileSiteKey]);
 
   const recordSubmission = (payload: ContactFormData) => {
     try {
@@ -134,7 +51,6 @@ const Contact = () => {
       },
       body: JSON.stringify({
         ...payload,
-        captchaToken,
         companyWebsite,
         startedAt: formStartedAt,
       }),
@@ -158,10 +74,6 @@ const Contact = () => {
         message: formData.message.trim(),
       };
 
-      if (!captchaToken) {
-        throw new Error("Complete the captcha check before submitting.");
-      }
-
       recordSubmission(payload);
       await submitContactForm(payload);
 
@@ -176,10 +88,6 @@ const Contact = () => {
         storeName: "",
         message: "",
       });
-      setCaptchaToken("");
-      if (window.turnstile && turnstileWidgetIdRef.current !== null) {
-        window.turnstile.reset(turnstileWidgetIdRef.current);
-      }
       navigate("/thank-you");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Submission failed.";
@@ -272,7 +180,7 @@ const Contact = () => {
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Submissions are protected by captcha and rate limiting before being emailed.
+                  Submissions include anti-spam checks and rate limiting before being emailed.
                 </p>
                 <Button type="submit" size="lg" disabled={isSubmitting} className="gap-2 sm:min-w-44">
                   {isSubmitting ? (
@@ -296,14 +204,6 @@ const Contact = () => {
                 value={companyWebsite}
                 onChange={(event) => setCompanyWebsite(event.target.value)}
               />
-
-              {turnstileSiteKey ? (
-                <div ref={turnstileContainerRef} className="pt-2" />
-              ) : (
-                <p className="text-sm text-destructive">
-                  Captcha is not configured. Set `VITE_TURNSTILE_SITE_KEY` to enable secure submissions.
-                </p>
-              )}
             </form>
           </div>
         </section>

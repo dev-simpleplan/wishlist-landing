@@ -43,12 +43,7 @@ const isRateLimited = (ip: string, now: number) => {
   return false;
 };
 
-const verifyTurnstile = async (token: string, remoteIp: string) => {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) {
-    throw new Error("Captcha secret is not configured.");
-  }
-
+const verifyTurnstile = async (token: string, remoteIp: string, secret: string) => {
   const body = new URLSearchParams({
     secret,
     response: token,
@@ -154,11 +149,14 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Please enter a valid email address." });
     }
 
-    if (!captchaToken) {
-      return res.status(400).json({ error: "Captcha token is missing." });
-    }
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+      if (!captchaToken) {
+        return res.status(400).json({ error: "Captcha token is missing." });
+      }
 
-    await verifyTurnstile(captchaToken, ip);
+      await verifyTurnstile(captchaToken, ip, turnstileSecret);
+    }
     await forwardMessage({ name, email, storeName, message });
 
     return res.status(200).json({ ok: true });
