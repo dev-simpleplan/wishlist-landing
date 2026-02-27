@@ -4,11 +4,14 @@ import heroPhone from "@/assets/hero-phone.png";
 
 const HeroSection = () => {
   const tickerItems = [
-    "Guest Wishlist Support",
-    "One-Click Save to Wishlist",
-    "Live Wishlist Counts",
-    "Shareable Wishlists",
-    "Shopify 2.0 Compatible",
+    "Guest & Logged-In Wishlist Sync",
+    "One-Click Save Buttons",
+    "Multi-List Wishlists",
+    "Back-In-Stock Reminders",
+    "Wishlist Analytics Dashboard",
+    "Smart Cart Rescue Flows",
+    "Shareable Wishlist Links",
+    "Fully Shopify 2.0 Compatible",
   ];
 
   return (
@@ -68,12 +71,18 @@ const HeroSection = () => {
       </div>
 
       <div className="absolute bottom-4 left-0 w-full px-4 md:px-6">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-full border border-border/70 bg-card/85 backdrop-blur-sm">
-          <div className="flex w-max animate-ticker-ltr py-2">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-full border border-white/20 bg-white/60 shadow-sm backdrop-blur-md">
+          <div
+            className="group flex w-max animate-ticker-ltr py-2.5 motion-reduce:animate-none hover:[animation-play-state:paused] focus-within:[animation-play-state:paused]"
+            aria-label="Wishlist app feature ticker"
+          >
             {[...tickerItems, ...tickerItems].map((item, index) => (
-              <div key={`${item}-${index}`} className="mx-5 flex items-center gap-5 whitespace-nowrap text-sm font-medium text-foreground/80">
+              <div
+                key={`${item}-${index}`}
+                className="mx-6 flex items-center gap-2 whitespace-nowrap text-[13px] font-medium text-foreground/70"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#55B85F]" />
                 <span>{item}</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-green/70" />
               </div>
             ))}
           </div>
