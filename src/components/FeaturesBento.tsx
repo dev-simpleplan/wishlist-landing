@@ -1,7 +1,9 @@
-import { BarChart3, Heart, Repeat2 } from "lucide-react";
+import { BarChart3, Heart, Repeat2, ShoppingCart, Sparkles } from "lucide-react";
 import dashboardImg from "@/assets/dashboard.png";
 import thirdSectionImg from "@/assets/3rd Section.png";
 import collectionImg from "@/assets/collection-page.png";
+import cartRescueImg from "@/assets/cart-rescue.png";
+import wishlistImg from "@/assets/wishlist-page.png";
 
 const FeaturesBento = () => (
   <section className="pb-16 md:pb-24">
@@ -62,6 +64,38 @@ const FeaturesBento = () => (
           <img
             src={dashboardImg}
             alt="Wishlist analytics and performance dashboard"
+            className="h-[190px] w-full rounded-xl border border-border object-cover md:h-[220px]"
+            loading="lazy"
+          />
+        </article>
+
+        <article className="rounded-2xl border border-border bg-card p-4 shadow-sm md:p-5">
+          <div className="mb-3 inline-flex items-center gap-2 text-foreground">
+            <ShoppingCart className="h-4 w-4 text-brand-green" />
+            <h3 className="text-lg font-heading font-semibold">Give Abandoned Carts a Second Chance</h3>
+          </div>
+          <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+            Allow hesitant shoppers a simple Save for Later option inside the cart. Keep products saved, reduce abandonment, and bring customers back to buy later.
+          </p>
+          <img
+            src={cartRescueImg}
+            alt="Cart rescue with save for later"
+            className="h-[190px] w-full rounded-xl border border-border object-cover md:h-[220px]"
+            loading="lazy"
+          />
+        </article>
+
+        <article className="rounded-2xl border border-border bg-card p-4 shadow-sm md:p-5">
+          <div className="mb-3 inline-flex items-center gap-2 text-foreground">
+            <Sparkles className="h-4 w-4 text-brand-green" />
+            <h3 className="text-lg font-heading font-semibold">The Wishlist Page That Actually Sells</h3>
+          </div>
+          <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+            Transform save for later into a powerful sales channel. Give customers a dedicated wishlist page where they can review, share, and move items to cart in one click.
+          </p>
+          <img
+            src={wishlistImg}
+            alt="Wishlist page with saved items"
             className="h-[190px] w-full rounded-xl border border-border object-cover md:h-[220px]"
             loading="lazy"
           />

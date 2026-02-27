@@ -4,6 +4,7 @@ import TrustBar from "@/components/TrustBar";
 import WhySection from "@/components/WhySection";
 import EverywhereStrategy from "@/components/EverywhereStrategy";
 import FeaturesBento from "@/components/FeaturesBento";
+import CustomizationSection from "@/components/CustomizationSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import EarlyAdopter from "@/components/EarlyAdopter";
 import FAQSection from "@/components/FAQSection";
@@ -19,6 +20,7 @@ const Index = () => {
         <WhySection />
         <EverywhereStrategy />
         <FeaturesBento />
+        <CustomizationSection />
         <ReviewsSection />
         <EarlyAdopter />
         <FAQSection />
