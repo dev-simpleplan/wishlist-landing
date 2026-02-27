@@ -73,7 +73,7 @@ const Contact = () => {
         email: payload.email,
         storeName: payload.storeName,
         message: payload.message,
-        _subject: `New contact request from ${payload.name}`,
+        _subject: "RE: Wishlistsuite : Contact Us",
       }),
     });
 
