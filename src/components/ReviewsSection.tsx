@@ -26,7 +26,7 @@ const ReviewsSection = () => (
     <div className="container mx-auto px-4">
       <div className="text-center max-w-3xl mx-auto">
         <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground">
-          Merchants Love WishlistSuite
+          What people say about us
         </h2>
       </div>
 
