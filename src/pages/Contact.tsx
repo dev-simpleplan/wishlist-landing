@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Mail, MessageSquare, Store } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Store } from "lucide-react";
 import NavHeader from "@/components/NavHeader";
 import FooterCTA from "@/components/FooterCTA";
 import { Button } from "@/components/ui/button";
@@ -112,10 +112,6 @@ const Contact = () => {
                 <ArrowLeft className="h-4 w-4" />
                 Back to home
               </Link>
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-foreground">
-                <MessageSquare className="h-4 w-4 text-brand-green" />
-                Contact Wishlistsuite
-              </div>
               <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight text-foreground">
                 Let&apos;s talk about your store goals
               </h1>

@@ -1,7 +1,7 @@
 import { BarChart3, Heart, Repeat2, ShoppingCart, Sparkles } from "lucide-react";
 import dashboardImg from "@/assets/dashboard.png";
-import thirdSectionImg from "@/assets/3rd Section.png";
-import collectionImg from "@/assets/collection-page.png";
+import productpage3rdsectionImg from "@/assets/productpage3rdsection.png";
+import collectionImg from "@/assets/collection page.png";
 import cartRescueImg from "@/assets/cart-rescue.png";
 import wishlistImg from "@/assets/wishlist-page.png";
 
@@ -9,10 +9,7 @@ const FeaturesBento = () => (
   <section className="pb-16 md:pb-24">
     <div className="container mx-auto px-4">
       <div className="mb-8 md:mb-10">
-        <p className="inline-flex items-center rounded-full bg-brand-green-light px-4 py-1.5 text-sm font-medium text-foreground">
-          Feature Highlights
-        </p>
-        <h2 className="mt-4 text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
+        <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
           Turn Browsing Into Buying Intent
         </h2>
         <p className="mt-4 max-w-3xl text-lg text-muted-foreground leading-relaxed">
@@ -30,7 +27,7 @@ const FeaturesBento = () => (
             Many shoppers are interested but not ready to buy right away. Wishlists keep that intent alive so they can return and purchase later.
           </p>
           <img
-            src={thirdSectionImg}
+            src={productpage3rdsectionImg}
             alt="Wishlist mobile interface preview"
             className="h-[220px] w-full rounded-xl border border-border object-cover object-top md:h-[280px]"
             loading="lazy"

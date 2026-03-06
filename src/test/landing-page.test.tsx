@@ -45,7 +45,12 @@ describe("landing page regressions", () => {
     fireEvent.click(screen.getByRole("button", { name: "Collection Page" }));
 
     const collectionImage = screen.getByRole("img", { name: "Collection page with wishlist" });
-    expect(collectionImage.getAttribute("src")).toContain("collection-page");
+    expect(collectionImage.getAttribute("src")).toContain("collection");
+
+    fireEvent.click(screen.getByRole("button", { name: "Product Page" }));
+
+    const productImage = screen.getByRole("img", { name: "Product page with wishlist" });
+    expect(productImage.getAttribute("src")).toContain("3rd");
   });
 
   it("uses client-side navigation on the 404 page", () => {

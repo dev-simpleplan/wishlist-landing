@@ -25,10 +25,7 @@ const WhySection = () => (
   <section className="pt-20 pb-6 md:pt-24 md:pb-8">
     <div className="container mx-auto px-4">
       <div className="max-w-3xl">
-        <p className="inline-flex items-center rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-foreground">
-          Why It Matters
-        </p>
-        <h2 className="mt-4 text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
+        <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
           Why Wishlists Matter
         </h2>
         <p className="mt-4 text-lg text-muted-foreground leading-relaxed">

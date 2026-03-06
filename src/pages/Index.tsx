@@ -6,7 +6,6 @@ import EverywhereStrategy from "@/components/EverywhereStrategy";
 import FeaturesBento from "@/components/FeaturesBento";
 import CustomizationSection from "@/components/CustomizationSection";
 import ReviewsSection from "@/components/ReviewsSection";
-import EarlyAdopter from "@/components/EarlyAdopter";
 import FAQSection from "@/components/FAQSection";
 import FooterCTA from "@/components/FooterCTA";
 
@@ -22,7 +21,6 @@ const Index = () => {
         <FeaturesBento />
         <CustomizationSection />
         <ReviewsSection />
-        <EarlyAdopter />
         <FAQSection />
         <FooterCTA />
       </main>

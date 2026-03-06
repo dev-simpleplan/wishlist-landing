@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
 const faqs = [
   {
@@ -48,6 +49,8 @@ const faqs = [
   },
 ];
 
+const visibleFaqs = faqs.slice(0, 4);
+
 const FAQSection = () => (
   <section id="faq" className="scroll-mt-28 py-20 md:py-32 bg-card">
     <div className="container mx-auto px-4 max-w-3xl">
@@ -55,7 +58,7 @@ const FAQSection = () => (
         Frequently Asked Questions
       </h2>
       <Accordion type="single" collapsible className="space-y-3">
-        {faqs.map((faq, i) => (
+        {visibleFaqs.map((faq, i) => (
           <AccordionItem
             key={i}
             value={`faq-${i}`}
@@ -70,6 +73,14 @@ const FAQSection = () => (
           </AccordionItem>
         ))}
       </Accordion>
+      <div className="mt-8 text-center">
+        <Link
+          to="/faq"
+          className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          View More FAQ
+        </Link>
+      </div>
     </div>
   </section>
 );

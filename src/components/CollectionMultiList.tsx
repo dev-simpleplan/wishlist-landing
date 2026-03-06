@@ -1,4 +1,4 @@
-import collectionImg from "@/assets/collection-page.png";
+import collectionImg from "@/assets/collection page.png";
 import wishlistImg from "@/assets/wishlist-page.png";
 
 const CollectionMultiList = () => (

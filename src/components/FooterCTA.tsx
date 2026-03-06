@@ -45,7 +45,7 @@ const FooterCTA = () => (
             <span className="font-heading text-lg font-bold text-brand-cream">Wishlistsuite</span>
           </div>
           <div className="flex gap-8 text-sm text-brand-cream/60">
-            <a href="#" className="hover:text-brand-cream transition-colors">Privacy</a>
+            <Link to="/privacy-policy" className="hover:text-brand-cream transition-colors">Privacy</Link>
             <Link to="/faq" className="hover:text-brand-cream transition-colors">FAQ</Link>
             <Link to="/contact" className="hover:text-brand-cream transition-colors">Support</Link>
           </div>

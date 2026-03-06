@@ -25,10 +25,7 @@ const ReviewsSection = () => (
   <section className="py-16 md:py-24 bg-card">
     <div className="container mx-auto px-4">
       <div className="text-center max-w-3xl mx-auto">
-        <p className="inline-flex items-center rounded-full bg-primary/20 px-4 py-1.5 text-sm font-medium text-foreground">
-          Reviews
-        </p>
-        <h2 className="mt-4 text-3xl md:text-5xl font-heading font-bold text-foreground">
+        <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground">
           Merchants Love WishlistSuite
         </h2>
       </div>
