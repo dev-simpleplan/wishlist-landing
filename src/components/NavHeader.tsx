@@ -34,9 +34,9 @@ const NavHeader = () => {
     >
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Wishlistsuite logo" className="w-9 h-9 object-contain" />
+          <img src={logo} alt="WishlistSuite logo" className="w-9 h-9 object-contain" />
           <span className="font-heading text-xl font-bold text-foreground">
-            Wishlistsuite
+            WishlistSuite
           </span>
         </Link>
 

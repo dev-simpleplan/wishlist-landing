@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 
 const faqs = [
   {
-    q: "Is Wishlistsuite compatible with Shopify 2.0 themes?",
-    a: "Yes. Wishlistsuite is fully optimized for Shopify 2.0 themes and works seamlessly with most modern Shopify stores, including Shopify Plus.",
+    q: "Is WishlistSuite compatible with Shopify 2.0 themes?",
+    a: "Yes. WishlistSuite is fully optimized for Shopify 2.0 themes and works seamlessly with most modern Shopify stores, including Shopify Plus.",
   },
   {
     q: "Do customers need to create an account to use the wishlist?",
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "Does it slow down my store?",
-    a: "No. Wishlistsuite is lightweight and optimized for performance, ensuring it won’t impact your store speed.",
+    a: "No. WishlistSuite is lightweight and optimized for performance, ensuring it won’t impact your store speed.",
   },
   {
     q: "Can customers share their wishlist?",
@@ -36,12 +36,12 @@ const faqs = [
     a: "Yes. Shoppers can move items from their cart to their wishlist instead of removing them completely — helping you preserve buying intent.",
   },
   {
-    q: "Do I get analytics with Wishlistsuite?",
+    q: "Do I get analytics with WishlistSuite?",
     a: "Yes. You get insights into most-saved products, wishlist-to-cart conversions, and customer trends to help you make smarter merchandising decisions.",
   },
   {
     q: "Is there a free trial?",
-    a: "Yes. You can try Wishlistsuite free for 14 days and explore all features before committing.",
+    a: "Yes. You can try WishlistSuite free for 14 days and explore all features before committing.",
   },
   {
     q: "What kind of support do you offer?",

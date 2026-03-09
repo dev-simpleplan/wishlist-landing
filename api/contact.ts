@@ -100,7 +100,7 @@ const forwardMessage = async (payload: {
     },
     body: JSON.stringify({
       ...payload,
-      _subject: "RE: Wishlistsuite : Contact Us",
+      _subject: "RE: WishlistSuite : Contact Us",
     }),
   });
 

@@ -29,10 +29,10 @@ const HeroSection = () => {
               Built for Shopify Online Store 2.0
             </div>
             <h1 className="text-4xl md:text-6xl font-heading font-bold leading-tight text-foreground">
-              Turn Browsers into Buyers with Wishlistsuite
+              Turn Browsers into Buyers with WishlistSuite
             </h1>
             <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-              Give shoppers a simple way to save, organize, and come back to what they love. Wishlistsuite captures buying intent, reduces cart abandonment, and turns “not now” into future revenue.
+              Give shoppers a simple way to save, organize, and come back to what they love. WishlistSuite captures buying intent, reduces cart abandonment, and turns “not now” into future revenue.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="gap-2 text-base">

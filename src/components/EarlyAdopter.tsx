@@ -15,7 +15,7 @@ const EarlyAdopter = () => (
             Limited Spots
           </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-brand-cream leading-tight">
-            Get Early Access to the First Wave of Wishlistsuite
+            Get Early Access to the First Wave of WishlistSuite
           </h2>
           <p className="text-lg text-brand-cream/70 leading-relaxed">
             Join our early access program and get personalized onboarding, priority support, and white-glove setup to launch with confidence.
