@@ -24,6 +24,11 @@ const NavHeader = () => {
     { label: "Features", href: "/#features" },
     { label: "FAQ", href: "/faq" },
     { label: "Contact", href: "/contact" },
+    {
+      label: "Help Docs",
+      href: "https://wishlistsuite.gitbook.io/wishlistsuite-docs",
+      external: true,
+    },
   ];
 
   return (
@@ -45,6 +50,8 @@ const NavHeader = () => {
             <a
               key={link.label}
               href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {link.label}
@@ -86,6 +93,8 @@ const NavHeader = () => {
             <a
               key={link.label}
               href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
               className="block text-sm font-medium text-muted-foreground"
               onClick={() => setMobileOpen(false)}
             >
