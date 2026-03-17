@@ -47,6 +47,22 @@ To enable email delivery from the `/contact` page:
 
 This project now submits contact requests to `/api/contact`, where captcha verification and basic anti-spam checks are applied before forwarding to email.
 
+### Blog and Strapi setup
+
+The frontend blog scaffold is already available at:
+
+- `/blog`
+- `/blog/:slug`
+
+To connect it to Strapi:
+
+1. Copy `.env.example` to `.env`
+2. Set `VITE_STRAPI_URL` to your Strapi base URL
+3. Optionally set `VITE_STRAPI_API_TOKEN` if you do not want public read access
+4. Create the Strapi content model in your separate backend repository as described in [docs/strapi-blog-setup.md](/Users/simpleplan/Documents/GitHub/wishlist-landing/docs/strapi-blog-setup.md)
+
+If `VITE_STRAPI_URL` is not set, the app falls back to local mock blog content so the pages still render during development.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
