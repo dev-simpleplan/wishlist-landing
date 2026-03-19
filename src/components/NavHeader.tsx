@@ -21,7 +21,6 @@ const NavHeader = () => {
 
   const links = [
     { label: "Home", href: "/" },
-    { label: "Features", href: "/#features" },
     { label: "FAQ", href: "/faq" },
     { label: "Contact", href: "/contact" },
     {
