@@ -1,260 +1,316 @@
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
+import { ChevronDown } from "lucide-react";
 import NavHeader from "@/components/NavHeader";
 import FooterCTA from "@/components/FooterCTA";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { getFaqCategories, getFaqItems, getFaqPage } from "@/lib/strapi";
 
-type FAQItem = {
-  q: string;
-  a: string[];
-  bullets?: string[];
-};
-
-type FAQCategory = {
+type FaqPageData = {
   title: string;
-  items: FAQItem[];
+  heroHeading: string;
+  heroDescription: string;
+  seo: {
+    meta_title?: string;
+    meta_description?: string;
+    canonical_url?: string;
+    og_title?: string;
+    og_description?: string;
+  };
 };
 
-const faqCategories: FAQCategory[] = [
-  {
-    title: "General",
-    items: [
-      {
-        q: "What is WishlistSuite?",
-        a: [
-          "WishlistSuite allows customers to save products to a wishlist so they can purchase them later. It helps increase return visits, customer engagement, and conversions.",
-        ],
-      },
-      {
-        q: "How does WishlistSuite work?",
-        a: [
-          "Customers can click the wishlist icon on product or collection pages to save items. Saved products can be accessed later from their wishlist page or icon.",
-        ],
-      },
-      {
-        q: "Does WishlistSuite work with all Shopify themes?",
-        a: [
-          "WishlistSuite is compatible with all Shopify 2.0 themes and most vintage and legacy themes. If your theme has heavy customizations, our team can assist with placement adjustments.",
-        ],
-      },
-      {
-        q: "Does the app affect store speed?",
-        a: [
-          "No. WishlistSuite is built using lightweight scripts and Shopify's native app blocks, ensuring minimal performance impact.",
-        ],
-      },
-      {
-        q: "Does it work on mobile?",
-        a: [
-          "Yes. WishlistSuite is fully responsive and works seamlessly across desktop, tablet, and mobile devices.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Installation and Setup",
-    items: [
-      {
-        q: "How do I install WishlistSuite?",
-        a: [
-          "To install WishlistSuite:",
-          "Install the app from the Shopify App Store.",
-          "Go to your Theme Customizer and enable the App Embed for WishlistSuite.",
-          "Once enabled, the wishlist functionality will be live on your storefront.",
-        ],
-      },
-      {
-        q: "Do I need to add an App Block?",
-        a: [
-          "Yes. WishlistSuite uses Shopify App Blocks to position the wishlist button on the product page. You can also add custom CSS and JS to customize the button based on your requirements.",
-        ],
-      },
-      {
-        q: "Can I choose where the wishlist icon appears?",
-        a: [
-          "Yes. You can position the icon using the floating icon or adjust placement via the Launch Point option in the Settings page. You can also add custom CSS and JS from the Wishlist Floating Icon Embed.",
-        ],
-      },
-      {
-        q: "Do I need coding knowledge?",
-        a: [
-          "No coding is required for standard setup. Most customizations can be done from the Settings page in the app. Advanced custom positioning may require minor theme adjustments, and our team can assist.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Wishlist Behavior",
-    items: [
-      {
-        q: "Can guest users create a wishlist?",
-        a: [
-          "Yes. Guests can save products. However, wishlist persistence across devices requires customer login.",
-        ],
-      },
-      {
-        q: "Are wishlists saved after logout?",
-        a: [
-          "If the customer is logged in, their wishlist is saved to their account and accessible anytime they log back in.",
-        ],
-      },
-      {
-        q: "Can customers share their wishlist?",
-        a: [
-          "As long as the app embed is enabled, both existing and guest customers can share their wishlist via a public link.",
-        ],
-      },
-      {
-        q: "Can customers add product variants to their wishlist?",
-        a: [
-          "Yes. WishlistSuite supports saving specific product variants (for example, size or color). The selected variant will be visible properly in the wishlist.",
-        ],
-      },
-      {
-        q: "What happens if a product goes out of stock?",
-        a: [
-          "The product remains in the wishlist, but customers see the updated availability status. The out-of-stock product will not be added to cart.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Customization",
-    items: [
-      {
-        q: "Can I customize the wishlist icon?",
-        a: [
-          "Yes. You can change icon style, size, color, and placement to match your brand. This can be done from the Settings page in the app.",
-        ],
-      },
-      {
-        q: "Can I edit wishlist text labels?",
-        a: [
-          "Yes. All major labels (for example, Add to Wishlist and My Wishlist) can be customized from the Settings page in the app.",
-        ],
-      },
-      {
-        q: "Can I translate WishlistSuite?",
-        a: [
-          "No, translations are not supported yet. This is something we are considering for future updates.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Customer Data and Sync",
-    items: [
-      {
-        q: "Where is wishlist data stored?",
-        a: [
-          "Wishlist data is stored securely and linked to the customer account when logged in.",
-        ],
-      },
-      {
-        q: "Is wishlist data synced across devices?",
-        a: [
-          "Yes. Wishlist data is synced across devices if the customer is logged in to their account.",
-          "When a customer is logged in, their wishlist is linked to their Shopify customer account. They can save a product on one device and see it later on another device.",
-          "For guest users, the wishlist is stored locally in the browser. It is device-specific and does not sync across devices.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Compatibility",
-    items: [
-      {
-        q: "Does WishlistSuite work with cart drawers?",
-        a: [
-          "Yes. WishlistSuite is designed to work with both traditional cart pages and modern cart drawer (side cart) setups.",
-          "If your theme uses a heavily customized cart drawer, minor adjustments may be required and our team can assist.",
-        ],
-      },
-    ],
-  },
-  {
-    title: "Analytics",
-    items: [
-      {
-        q: "Does WishlistSuite provide analytics?",
-        a: [
-          "Yes. WishlistSuite includes built-in analytics to help you understand customer behavior and product demand. Visit the Analytics page in the app to view detailed information about wishlists, customers, and products.",
-        ],
-      },
-      {
-        q: "What analytics can I see inside WishlistSuite?",
-        a: ["You can track:"],
-        bullets: [
-          "Total Wishlists",
-          "Total Customers",
-          "Wishlist Views",
-          "Total Items Added",
-          "Conversion insights",
-          "Most wishlisted products",
-          "Total Revenue from Conversions",
-          "Average Order Value",
-        ],
-      },
-    ],
-  },
-];
+type FaqCategory = {
+  id: string | number;
+  name: string;
+  slug: string;
+  description?: string;
+};
 
-const FAQPage = () => (
-  <div className="min-h-screen bg-background">
-    <NavHeader />
-    <main className="pt-28 pb-16 md:pt-36 md:pb-24">
-      <section className="container mx-auto px-4 max-w-5xl">
-        <div className="text-center mb-12 md:mb-16">
-          <p className="inline-flex items-center gap-2 bg-primary/20 rounded-full px-4 py-1.5 text-sm font-medium text-foreground">
-            FAQ
-          </p>
-          <h1 className="mt-4 text-4xl md:text-5xl font-heading font-bold text-foreground">
-            Frequently Asked Questions
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Everything you need to know about WishlistSuite setup, behavior, and compatibility.
-          </p>
-        </div>
+type FaqItem = {
+  id: string | number;
+  question: string;
+  answer: unknown;
+  shortAnswer?: string;
+  sortOrder?: number;
+  featured?: boolean;
+  categorySlug?: string;
+  categoryName?: string;
+};
 
-        <div className="space-y-8">
-          {faqCategories.map((category) => (
-            <section key={category.title} className="rounded-2xl border border-border bg-card p-5 md:p-7">
-              <h2 className="text-2xl font-heading font-bold text-foreground mb-4">{category.title}</h2>
-              <Accordion type="single" collapsible className="space-y-3">
-                {category.items.map((item, index) => (
-                  <AccordionItem
-                    key={`${category.title}-${item.q}`}
-                    value={`${category.title}-${index}`}
-                    className="bg-background rounded-xl border border-border px-5"
-                  >
-                    <AccordionTrigger className="text-left font-heading font-semibold text-foreground hover:no-underline">
-                      {item.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground leading-relaxed space-y-3">
-                      {item.a.map((paragraph, pIndex) => (
-                        <p key={`${item.q}-p-${pIndex}`}>{paragraph}</p>
+const getEntityData = (entry: any) => {
+  if (!entry) return null;
+  return entry.attributes ? entry.attributes : entry;
+};
+
+const normalizeFaqPage = (raw: any): FaqPageData | null => {
+  const page = getEntityData(raw?.data ?? raw);
+  if (!page) return null;
+
+  return {
+    title: page.title || "FAQ",
+    heroHeading: page.hero_heading || page.title || "FAQ",
+    heroDescription: page.hero_description || "",
+    seo: page.seo || {},
+  };
+};
+
+const normalizeFaqCategories = (raw: any): FaqCategory[] => {
+  const rows = Array.isArray(raw?.data) ? raw.data : [];
+
+  return rows
+    .map((row: any) => {
+      const category = getEntityData(row);
+      if (!category || !category.name || !category.slug) return null;
+
+      return {
+        id: row.id ?? category.documentId ?? category.slug,
+        name: category.name,
+        slug: category.slug,
+        description: category.description || "",
+      };
+    })
+    .filter(Boolean) as FaqCategory[];
+};
+
+const normalizeFaqItems = (raw: any): FaqItem[] => {
+  const rows = Array.isArray(raw?.data) ? raw.data : [];
+
+  return rows
+    .map((row: any) => {
+      const faq = getEntityData(row);
+      if (!faq || !faq.question) return null;
+
+      const rawCategory = faq.category?.data
+        ? getEntityData(faq.category.data)
+        : getEntityData(faq.category);
+
+      const answerValue = faq.answer ?? "";
+
+      return {
+        id: row.id ?? faq.documentId ?? faq.question,
+        question: faq.question,
+        answer: answerValue,
+        shortAnswer: faq.short_answer || "",
+        sortOrder: typeof faq.sort_order === "number" ? faq.sort_order : 9999,
+        featured: Boolean(faq.featured),
+        categorySlug: rawCategory?.slug || "",
+        categoryName: rawCategory?.name || "",
+      };
+    })
+    .filter(Boolean) as FaqItem[];
+};
+
+const renderAnswer = (answer: unknown) => {
+  if (!answer) return null;
+
+  if (typeof answer === "string") {
+    return answer.split("\n").map((paragraph, index) =>
+      paragraph.trim() ? (
+        <p key={index} className="mb-3 last:mb-0">
+          {paragraph}
+        </p>
+      ) : null
+    );
+  }
+
+  if (Array.isArray(answer)) {
+    return answer.map((block: any, index: number) => {
+      const text =
+        typeof block?.text === "string"
+          ? block.text
+          : Array.isArray(block?.children)
+            ? block.children.map((child: any) => child?.text || "").join(" ")
+            : "";
+
+      if (!text.trim()) return null;
+
+      return (
+        <p key={index} className="mb-3 last:mb-0">
+          {text}
+        </p>
+      );
+    });
+  }
+
+  return <p className="mb-3 last:mb-0">{String(answer)}</p>;
+};
+
+const FAQ = () => {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const {
+    data: pageData,
+    isLoading: pageLoading,
+    isError: pageError,
+  } = useQuery({
+    queryKey: ["faq-page"],
+    queryFn: getFaqPage,
+  });
+
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useQuery({
+    queryKey: ["faq-categories"],
+    queryFn: getFaqCategories,
+  });
+
+  const {
+    data: itemsData,
+    isLoading: itemsLoading,
+    isError: itemsError,
+  } = useQuery({
+    queryKey: ["faq-items"],
+    queryFn: getFaqItems,
+  });
+
+  const page = useMemo(() => normalizeFaqPage(pageData), [pageData]);
+  const categories = useMemo(
+    () => normalizeFaqCategories(categoriesData),
+    [categoriesData]
+  );
+  const faqItems = useMemo(() => normalizeFaqItems(itemsData), [itemsData]);
+
+  const groupedCategories = useMemo(() => {
+    return categories.map((category) => ({
+      ...category,
+      items: faqItems
+        .filter((item) => item.categorySlug === category.slug)
+        .sort((a, b) => (a.sortOrder ?? 9999) - (b.sortOrder ?? 9999)),
+    }));
+  }, [categories, faqItems]);
+
+  const filteredCategories = useMemo(() => {
+    if (!activeCategory) return groupedCategories;
+    return groupedCategories.filter((cat) => cat.slug === activeCategory);
+  }, [groupedCategories, activeCategory]);
+
+  const isLoading = pageLoading || categoriesLoading || itemsLoading;
+  const hasError = pageError || categoriesError || itemsError;
+  const seo = page?.seo || {};
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{seo.meta_title || page?.title || "FAQ"}</title>
+        <meta name="description" content={seo.meta_description || ""} />
+        {seo.canonical_url ? (
+          <link rel="canonical" href={seo.canonical_url} />
+        ) : null}
+        {seo.og_title ? <meta property="og:title" content={seo.og_title} /> : null}
+        {seo.og_description ? (
+          <meta property="og:description" content={seo.og_description} />
+        ) : null}
+      </Helmet>
+
+      <NavHeader />
+
+      <main className="pb-20 pt-28 md:pb-28 md:pt-36">
+        <section className="container mx-auto px-4">
+          <div className="max-w-5xl">
+            <h1 className="text-4xl font-bold text-foreground md:text-6xl">
+              {page?.heroHeading || "Frequently Asked Questions"}
+            </h1>
+
+            {page?.heroDescription ? (
+              <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">
+                {page.heroDescription}
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 pt-10">
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setActiveCategory(null)}
+              className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors ${
+                activeCategory === null
+                  ? "border-black bg-black text-white"
+                  : "border-border bg-transparent text-foreground"
+              }`}
+            >
+              All
+            </button>
+
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategory(category.slug)}
+                className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors ${
+                  activeCategory === category.slug
+                    ? "border-black bg-black text-white"
+                    : "border-border bg-transparent text-foreground"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 pt-10">
+          <div className="max-w-4xl space-y-8">
+            {isLoading ? (
+              <div className="rounded-2xl border border-border bg-card p-6 text-muted-foreground">
+                Loading FAQs...
+              </div>
+            ) : hasError ? (
+              <div className="rounded-2xl border border-destructive/30 bg-card p-6 text-destructive">
+                Could not load FAQ data. Please check Strapi permissions and API
+                responses.
+              </div>
+            ) : filteredCategories.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-card p-6 text-muted-foreground">
+                No FAQ categories found.
+              </div>
+            ) : (
+              filteredCategories.map((category) => (
+                <div key={category.id}>
+                  <h2 className="mb-2 text-2xl font-bold text-foreground">
+                    {category.name}
+                  </h2>
+
+                  {category.description ? (
+                    <p className="mb-5 text-muted-foreground">
+                      {category.description}
+                    </p>
+                  ) : null}
+
+                  {category.items.length === 0 ? (
+                    <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+                      No FAQs found in this category yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {category.items.map((faq) => (
+                        <details
+                          key={faq.id}
+                          className="group rounded-2xl border border-border bg-card p-5 shadow-sm"
+                        >
+                          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-foreground">
+                            <span>{faq.question}</span>
+                            <ChevronDown className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" />
+                          </summary>
+
+                          <div className="mt-4 leading-7 text-muted-foreground">
+                            {renderAnswer(faq.answer)}
+                          </div>
+                        </details>
                       ))}
-                      {item.bullets && (
-                        <ul className="list-disc pl-6 space-y-1">
-                          {item.bullets.map((bullet) => (
-                            <li key={bullet}>{bullet}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </section>
-          ))}
-        </div>
-      </section>
-    </main>
-    <FooterCTA />
-  </div>
-);
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </main>
 
-export default FAQPage;
+      <FooterCTA />
+    </div>
+  );
+};
+
+export default FAQ;

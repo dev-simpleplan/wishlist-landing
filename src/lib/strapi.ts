@@ -8,56 +8,41 @@ import type {
   StrapiMedia,
 } from "@/types/blog";
 
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL?.replace(/\/$/, "");
-const STRAPI_API_TOKEN = import.meta.env.VITE_STRAPI_API_TOKEN;
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL?.replace(/\/$/, "") || "";
+const STRAPI_API_TOKEN = import.meta.env.VITE_STRAPI_API_TOKEN || "";
 
 const mockPosts: BlogPost[] = [
   {
-    id: "wishlist-strategy",
-    slug: "wishlist-strategy-for-shopify-growth",
-    title: "Wishlist strategy for Shopify growth",
+    id: "wishlist-ux-patterns",
+    slug: "wishlist-ux-patterns",
+    title: "Wishlist UX patterns that improve repeat visits",
     excerpt:
-      "A practical framework for turning wishlist intent into repeat traffic, email triggers, and better merchandising decisions.",
-    publishedAt: "2026-03-12T09:00:00.000Z",
-    featured: true,
+      "A practical breakdown of the wishlist interactions that nudge customers to save products and come back with purchase intent.",
+    publishedAt: "2026-03-14T09:00:00.000Z",
     readTime: "6 min read",
-    category: { name: "Strategy", slug: "strategy" },
-    author: { name: "WishlistSuite Team", role: "Product Marketing" },
-    content: [
-      {
-        type: "heading",
-        level: 2,
-        children: [{ type: "text", text: "Why wishlists matter" }],
-      },
-      {
-        type: "paragraph",
-        children: [
-          {
-            type: "text",
-            text: "A strong wishlist flow helps stores capture intent before purchase and gives customers a clear reason to return.",
-          },
-        ],
-      },
-      {
-        type: "heading",
-        level: 2,
-        children: [{ type: "text", text: "Three useful lifecycle triggers" }],
-      },
-      {
-        type: "list",
-        format: "unordered",
-        children: [
-          { type: "list-item", children: [{ type: "text", text: "Back-in-stock reminders" }] },
-          { type: "list-item", children: [{ type: "text", text: "Price-drop notifications" }] },
-          { type: "list-item", children: [{ type: "text", text: "Saved-items abandonment campaigns" }] },
-        ],
-      },
-    ],
+    featured: true,
+    category: { name: "Shopify Tips", slug: "shopify-tips" },
+    author: { name: "WishlistSuite Team", role: "Growth Commerce" },
+    content:
+      "Wishlists work best when they feel native to the shopping journey. Add save actions where intent is highest, keep the interaction lightweight, and use reminders to bring shoppers back to the store.",
   },
   {
-    id: "wishlist-merchandising",
-    slug: "using-wishlist-data-for-merchandising",
-    title: "Using wishlist data for merchandising",
+    id: "wishlist-analytics-retention",
+    slug: "wishlist-analytics-retention",
+    title: "Using wishlist analytics to improve customer retention",
+    excerpt:
+      "What product, marketing, and support teams can learn from saved items, return visits, and restock demand.",
+    publishedAt: "2026-03-10T09:00:00.000Z",
+    readTime: "4 min read",
+    category: { name: "Retention", slug: "retention" },
+    author: { name: "WishlistSuite Team", role: "Lifecycle Marketing" },
+    content:
+      "The strongest retention signals often appear before the purchase. Saved products, repeated product views, and returning sessions can all inform smarter campaigns and better merchandising decisions.",
+  },
+  {
+    id: "wishlist-data-merchandising",
+    slug: "wishlist-data-merchandising",
+    title: "How Shopify brands use wishlist data for merchandising",
     excerpt:
       "How to use saved-product signals to identify high-intent products, seasonal patterns, and collection gaps.",
     publishedAt: "2026-03-05T09:00:00.000Z",
@@ -95,7 +80,11 @@ const getTextFromBlocks = (blocks?: BlogBlock[]) =>
 const extractMedia = (value: unknown): StrapiMedia | null => {
   if (!value || typeof value !== "object") return null;
 
-  const source = "data" in value && typeof value.data === "object" ? (value as { data: unknown }).data : value;
+  const source =
+    "data" in value && typeof (value as { data?: unknown }).data === "object"
+      ? (value as { data: unknown }).data
+      : value;
+
   if (!source || typeof source !== "object") return null;
 
   const entity = source as Record<string, unknown>;
@@ -123,10 +112,15 @@ const extractMedia = (value: unknown): StrapiMedia | null => {
 const extractRelation = <T extends object>(value: unknown): T | null => {
   if (!value || typeof value !== "object") return null;
 
-  const source = "data" in value && typeof value.data === "object" ? (value as { data: unknown }).data : value;
+  const source =
+    "data" in value && typeof (value as { data?: unknown }).data === "object"
+      ? (value as { data: unknown }).data
+      : value;
+
   if (!source || typeof source !== "object") return null;
 
   const entity = source as Record<string, unknown>;
+
   if (entity.attributes && typeof entity.attributes === "object") {
     return entity.attributes as T;
   }
@@ -136,7 +130,9 @@ const extractRelation = <T extends object>(value: unknown): T | null => {
 
 const normalizeCategory = (value: unknown): BlogCategory | null => {
   const relation = extractRelation<Record<string, unknown>>(value);
-  if (!relation || typeof relation.name !== "string" || typeof relation.slug !== "string") return null;
+  if (!relation || typeof relation.name !== "string" || typeof relation.slug !== "string") {
+    return null;
+  }
 
   return {
     name: relation.name,
@@ -145,8 +141,6 @@ const normalizeCategory = (value: unknown): BlogCategory | null => {
 };
 
 const normalizeAuthor = (value: unknown): BlogAuthor | null => {
-  if (!value || typeof value !== "object") return null;
-
   const relation = extractRelation<Record<string, unknown>>(value);
   if (!relation || typeof relation.name !== "string") return null;
 
@@ -157,8 +151,20 @@ const normalizeAuthor = (value: unknown): BlogAuthor | null => {
   };
 };
 
-const normalizePost = (entry: BlogPost | StrapiEntity<Record<string, unknown>> | Record<string, unknown>): BlogPost => {
-  const raw = "attributes" in entry && entry.attributes ? entry.attributes : entry;
+const normalizeSeoField = (seo: unknown, key: "meta_title" | "meta_description") => {
+  if (!seo || typeof seo !== "object") return null;
+  const value = (seo as Record<string, unknown>)[key];
+  return typeof value === "string" ? value : null;
+};
+
+const normalizePost = (
+  entry: BlogPost | StrapiEntity<Record<string, unknown>> | Record<string, unknown>,
+): BlogPost => {
+  const raw =
+    "attributes" in entry && entry.attributes
+      ? (entry.attributes as Record<string, unknown>)
+      : (entry as Record<string, unknown>);
+
   const id =
     ("documentId" in entry && typeof entry.documentId === "string" && entry.documentId) ||
     ("id" in entry && entry.id != null ? String(entry.id) : undefined) ||
@@ -187,18 +193,29 @@ const normalizePost = (entry: BlogPost | StrapiEntity<Record<string, unknown>> |
           : String(content).slice(0, 180),
     content,
     publishedAt:
-      typeof raw.publishedAt === "string"
-        ? raw.publishedAt
-        : typeof raw.createdAt === "string"
-          ? raw.createdAt
-          : new Date().toISOString(),
+      typeof raw.publish_date === "string"
+        ? raw.publish_date
+        : typeof raw.publishedAt === "string"
+          ? raw.publishedAt
+          : typeof raw.createdAt === "string"
+            ? raw.createdAt
+            : new Date().toISOString(),
     featured: Boolean(raw.featured),
-    readTime: typeof raw.readTime === "string" ? raw.readTime : undefined,
-    coverImage: extractMedia(raw.coverImage),
+    readTime:
+      typeof raw.read_time === "string"
+        ? raw.read_time
+        : typeof raw.readTime === "string"
+          ? raw.readTime
+          : undefined,
+    coverImage: extractMedia(raw.featured_image ?? raw.coverImage),
     author: normalizeAuthor(raw.author),
     category: normalizeCategory(raw.category),
-    seoTitle: typeof raw.seoTitle === "string" ? raw.seoTitle : null,
-    seoDescription: typeof raw.seoDescription === "string" ? raw.seoDescription : null,
+    seoTitle:
+      normalizeSeoField(raw.seo, "meta_title") ||
+      (typeof raw.seoTitle === "string" ? raw.seoTitle : null),
+    seoDescription:
+      normalizeSeoField(raw.seo, "meta_description") ||
+      (typeof raw.seoDescription === "string" ? raw.seoDescription : null),
   };
 };
 
@@ -215,7 +232,8 @@ const strapiFetch = async <T>(path: string): Promise<T> => {
   });
 
   if (!response.ok) {
-    throw new Error(`Strapi request failed with status ${response.status}`);
+    const text = await response.text().catch(() => "");
+    throw new Error(`Strapi request failed with status ${response.status}${text ? `: ${text}` : ""}`);
   }
 
   return (await response.json()) as T;
@@ -241,20 +259,24 @@ const sortPosts = (posts: BlogPost[], sort: BlogSortOption = DEFAULT_BLOG_SORT) 
   return next;
 };
 
-const buildBlogQueryString = ({ search, category, sort = DEFAULT_BLOG_SORT }: BlogListParams = {}) => {
+const buildBlogQueryString = ({
+  search,
+  category,
+  sort = DEFAULT_BLOG_SORT,
+}: BlogListParams = {}) => {
   const params = new URLSearchParams();
 
   const sortMap: Record<BlogSortOption, string> = {
-    newest: "publishedAt:desc",
-    oldest: "publishedAt:asc",
+    newest: "publish_date:desc",
+    oldest: "publish_date:asc",
     "title-asc": "title:asc",
     "title-desc": "title:desc",
   };
 
   params.set("sort[0]", sortMap[sort]);
-  params.set("populate[coverImage]", "true");
-  params.set("populate[author][populate][avatar]", "true");
+  params.set("populate[featured_image]", "true");
   params.set("populate[category]", "true");
+  params.set("populate[seo][populate][og_image]", "true");
 
   if (search?.trim()) {
     const trimmedSearch = search.trim();
@@ -273,7 +295,7 @@ export const isUsingMockStrapi = () => !STRAPI_URL;
 
 export const getStrapiAssetUrl = (media?: StrapiMedia | null) => {
   if (!media?.url) return "/placeholder.svg";
-  return isAbsoluteUrl(media.url) ? media.url : `${STRAPI_URL ?? ""}${media.url}`;
+  return isAbsoluteUrl(media.url) ? media.url : `${STRAPI_URL}${media.url}`;
 };
 
 export const formatBlogDate = (date: string) =>
@@ -283,12 +305,21 @@ export const formatBlogDate = (date: string) =>
     year: "numeric",
   }).format(new Date(date));
 
-export const listBlogPosts = async ({ search, category, sort = DEFAULT_BLOG_SORT }: BlogListParams = {}) => {
+export const listBlogPosts = async ({
+  search,
+  category,
+  sort = DEFAULT_BLOG_SORT,
+}: BlogListParams = {}) => {
   if (!STRAPI_URL) {
     const normalizedSearch = search?.trim().toLowerCase();
+
     const filteredPosts = mockPosts.filter((post) => {
       const matchesSearch = normalizedSearch
-        ? [post.title, post.excerpt, typeof post.content === "string" ? post.content : getTextFromBlocks(post.content)]
+        ? [
+            post.title,
+            post.excerpt,
+            typeof post.content === "string" ? post.content : getTextFromBlocks(post.content),
+          ]
             .join(" ")
             .toLowerCase()
             .includes(normalizedSearch)
@@ -334,7 +365,9 @@ export const getBlogPostBySlug = async (slug: string) => {
   }
 
   const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
-    `/api/blog-posts?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[coverImage]=true&populate[author]=true&populate[category]=true`,
+    `/api/blog-posts?filters[slug][$eq]=${encodeURIComponent(
+      slug,
+    )}&populate[featured_image]=true&populate[category]=true&populate[seo][populate][og_image]=true`,
   );
 
   const [entry] = response.data;
@@ -344,4 +377,102 @@ export const getBlogPostBySlug = async (slug: string) => {
 export const getRelatedBlogPosts = async (slug: string) => {
   const posts = await listBlogPosts({ sort: "newest" });
   return posts.filter((post) => post.slug !== slug).slice(0, 3);
+};
+
+
+export type BlogCategoryDetail = {
+  name: string;
+  slug: string;
+  description?: string | null;
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    canonicalUrl?: string | null;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+    ogImage?: StrapiMedia | null;
+  } | null;
+};
+
+
+const normalizeCategoryDetail = (
+  entry: Record<string, unknown> | { attributes?: Record<string, unknown> }
+): BlogCategoryDetail | null => {
+  const raw =
+    "attributes" in entry && entry.attributes
+      ? (entry.attributes as Record<string, unknown>)
+      : (entry as Record<string, unknown>);
+
+  if (typeof raw.name !== "string" || typeof raw.slug !== "string") {
+    return null;
+  }
+
+  const seo =
+    raw.seo && typeof raw.seo === "object"
+      ? (raw.seo as Record<string, unknown>)
+      : null;
+
+  return {
+    name: raw.name,
+    slug: raw.slug,
+    description:
+      typeof raw.description === "string" ? raw.description : null,
+    seo: seo
+      ? {
+          metaTitle:
+            typeof seo.meta_title === "string" ? seo.meta_title : null,
+          metaDescription:
+            typeof seo.meta_description === "string"
+              ? seo.meta_description
+              : null,
+          canonicalUrl:
+            typeof seo.canonical_url === "string" ? seo.canonical_url : null,
+          ogTitle:
+            typeof seo.og_title === "string" ? seo.og_title : null,
+          ogDescription:
+            typeof seo.og_description === "string"
+              ? seo.og_description
+              : null,
+          ogImage: extractMedia(seo.og_image),
+        }
+      : null,
+  };
+};
+export const getBlogCategoryBySlug = async (slug: string) => {
+  if (!STRAPI_URL) {
+    return null;
+  }
+
+  const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
+    `/api/categories?filters[slug][$eq]=${encodeURIComponent(
+      slug
+    )}&populate[seo][populate][og_image]=true`
+  );
+
+  const [entry] = response.data;
+  return entry ? normalizeCategoryDetail(entry) : null;
+};
+
+//For Faq Page and Categories, we assume a simpler structure without complex relations or media. Adjust as needed based on your actual Strapi models.
+
+export const getFaqPage = async () => {
+  return strapiFetch<any>(`/api/faq-page?populate=*`);
+};
+
+export const getFaqCategories = async () => {
+  return strapiFetch<any>(`/api/faq-categories?sort[0]=name:asc&populate=*`);
+};
+
+export const getFaqItems = async () => {
+  return strapiFetch<any>(
+    `/api/faq-items?sort[0]=sort_order:asc&populate[category]=true&populate[seo][populate][og_image]=true`
+  );
+};
+
+export const getHomePage = async () => {
+  return strapiFetch<any>(`/api/home-page?populate=*`);
+};
+
+export const getNavbar = async () => {
+  return strapiFetch<any>(`/api/navbar?populate=*`);
 };

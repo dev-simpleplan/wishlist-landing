@@ -4,7 +4,23 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/wishlistsuite-logo.svg";
 
-const NavHeader = () => {
+type NavHeaderProps = {
+  navbar?: any;
+};
+
+const defaultLinks = [
+  { text: "Home", url: "/" },
+  { text: "Blog", url: "/blog" },
+  { text: "FAQ", url: "/faq" },
+  { text: "Contact", url: "/contact" },
+  {
+    text: "Help Docs",
+    url: "https://wishlistsuite.gitbook.io/wishlistsuite-docs",
+    is_external: true,
+  },
+];
+
+const NavHeader = ({ navbar }: NavHeaderProps) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -19,16 +35,21 @@ const NavHeader = () => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  const links = [
-    { label: "Home", href: "/" },
-    { label: "FAQ", href: "/faq" },
-    { label: "Contact", href: "/contact" },
-    {
-      label: "Help Docs",
-      href: "https://wishlistsuite.gitbook.io/wishlistsuite-docs",
-      external: true,
-    },
-  ];
+  const links = Array.isArray(navbar?.menu_items) && navbar.menu_items.length > 0
+    ? navbar.menu_items
+    : defaultLinks;
+
+  const bookDemo = navbar?.book_demo_cta || {
+    text: "Book Demo",
+    url: "https://calendar.app.google/GSETSTRMgj7eVL7e6",
+    is_external: true,
+  };
+
+  const installApp = navbar?.install_app_cta || {
+    text: "Install App",
+    url: "https://apps.shopify.com/wishlistsuite",
+    is_external: true,
+  };
 
   return (
     <header
@@ -45,28 +66,36 @@ const NavHeader = () => {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          {links.map((link) => (
+          {links.map((link: any, index: number) => (
             <a
-              key={link.label}
-              href={link.href}
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noopener noreferrer" : undefined}
+              key={link.text || index}
+              href={link.url}
+              target={link.is_external ? "_blank" : undefined}
+              rel={link.is_external ? "noopener noreferrer" : undefined}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              {link.label}
+              {link.text}
             </a>
           ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
           <Button asChild variant="outline" size="sm">
-            <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
-              Book Demo
+            <a
+              href={bookDemo.url}
+              target={bookDemo.is_external ? "_blank" : undefined}
+              rel={bookDemo.is_external ? "noreferrer" : undefined}
+            >
+              {bookDemo.text}
             </a>
           </Button>
           <Button asChild size="sm">
-            <a href="https://apps.shopify.com/wishlistsuite" target="_blank" rel="noreferrer">
-              Install App
+            <a
+              href={installApp.url}
+              target={installApp.is_external ? "_blank" : undefined}
+              rel={installApp.is_external ? "noreferrer" : undefined}
+            >
+              {installApp.text}
             </a>
           </Button>
         </div>
@@ -88,27 +117,35 @@ const NavHeader = () => {
           id="mobile-nav-menu"
           className="md:hidden bg-card border-t border-border px-4 py-4 space-y-4 animate-fade-in"
         >
-          {links.map((link) => (
+          {links.map((link: any, index: number) => (
             <a
-              key={link.label}
-              href={link.href}
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noopener noreferrer" : undefined}
+              key={link.text || index}
+              href={link.url}
+              target={link.is_external ? "_blank" : undefined}
+              rel={link.is_external ? "noopener noreferrer" : undefined}
               className="block text-sm font-medium text-muted-foreground"
               onClick={() => setMobileOpen(false)}
             >
-              {link.label}
+              {link.text}
             </a>
           ))}
           <div className="flex gap-3 pt-2">
             <Button asChild variant="outline" size="sm" className="flex-1">
-              <a href="https://calendar.app.google/GSETSTRMgj7eVL7e6" target="_blank" rel="noreferrer">
-                Book Demo
+              <a
+                href={bookDemo.url}
+                target={bookDemo.is_external ? "_blank" : undefined}
+                rel={bookDemo.is_external ? "noreferrer" : undefined}
+              >
+                {bookDemo.text}
               </a>
             </Button>
             <Button asChild size="sm" className="flex-1">
-              <a href="https://apps.shopify.com/wishlistsuite" target="_blank" rel="noreferrer">
-                Install App
+              <a
+                href={installApp.url}
+                target={installApp.is_external ? "_blank" : undefined}
+                rel={installApp.is_external ? "noreferrer" : undefined}
+              >
+                {installApp.text}
               </a>
             </Button>
           </div>

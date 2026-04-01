@@ -1,13 +1,13 @@
 import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Mail, Store } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import NavHeader from "@/components/NavHeader";
 import FooterCTA from "@/components/FooterCTA";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL?.replace(/\/$/, "") || "";
 
 type ContactFormData = {
   name: string;
@@ -16,15 +16,9 @@ type ContactFormData = {
   message: string;
 };
 
-const STORAGE_KEY = "wishlistsuite_contact_submissions";
-const MAX_SAVED_SUBMISSIONS = 100;
-
 const Contact = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formStartedAt] = useState(() => Date.now());
-  const [companyWebsite, setCompanyWebsite] = useState("");
+
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -32,55 +26,63 @@ const Contact = () => {
     message: "",
   });
 
-  const recordSubmission = (payload: ContactFormData) => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const existing = raw ? JSON.parse(raw) : [];
-      const next = [{ ...payload, submittedAt: new Date().toISOString() }, ...existing].slice(0, MAX_SAVED_SUBMISSIONS);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // Continue silently if localStorage is unavailable.
-    }
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const submitContactForm = async (payload: ContactFormData) => {
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...payload,
-        companyWebsite,
-        startedAt: formStartedAt,
-      }),
-    });
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMessage("");
 
-    if (!response.ok) {
-      const data = (await response.json().catch(() => null)) as { error?: string } | null;
-      throw new Error(data?.error ?? "Could not deliver message by email.");
+    if (!STRAPI_URL) {
+      setErrorMessage("Strapi URL is missing in frontend .env file.");
+      return;
     }
-  };
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      const payload = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        storeName: formData.storeName.trim(),
-        message: formData.message.trim(),
-      };
-
-      recordSubmission(payload);
-      await submitContactForm(payload);
-
-      toast({
-        title: "Message sent",
-        description: "Thanks for reaching out. We will reply soon.",
+      const response = await fetch(`${STRAPI_URL}/api/contact-submissions/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          storeName: formData.storeName,
+          message: formData.message,
+        }),
       });
+
+      const responseText = await response.text();
+
+      let result: any = null;
+
+      try {
+        result = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        result = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          result?.error?.message ||
+          result?.message ||
+          responseText ||
+          "Failed to submit form"
+        );
+      }
 
       setFormData({
         name: "",
@@ -88,122 +90,104 @@ const Contact = () => {
         storeName: "",
         message: "",
       });
+
       navigate("/thank-you");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Submission failed.";
-      toast({
-        title: "Could not send message",
-        description: message,
-        variant: "destructive",
-      });
+      setErrorMessage(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <NavHeader />
+
       <main className="pt-28 pb-20 md:pt-36 md:pb-28">
         <section className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl space-y-8">
-            <div className="space-y-5">
-              <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4" />
-                Back to home
-              </Link>
-              <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight text-foreground">
-                Let&apos;s talk about your store goals
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-10 text-center">
+              <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground">
+                Contact Us
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Share your store details and what you want to improve. We usually respond within one business day.
+              <p className="mt-4 text-lg text-muted-foreground">
+                Have questions or need help? Send us a message and we’ll get back to you.
               </p>
             </div>
 
-            <form onSubmit={onSubmit} className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-sm space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-sm">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="storeName">Store Name</Label>
                   <Input
-                    id="name"
+                    id="storeName"
+                    name="storeName"
+                    type="text"
+                    value={formData.storeName}
+                    onChange={handleChange}
                     required
-                    value={formData.name}
-                    onChange={(event) => setFormData((current) => ({ ...current, name: event.target.value }))}
-                    placeholder="Jane Smith"
+                    placeholder="Enter your store name"
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="inline-flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     required
-                    value={formData.email}
-                    onChange={(event) => setFormData((current) => ({ ...current, email: event.target.value }))}
-                    placeholder="you@store.com"
+                    placeholder="Write your message here"
+                    className="min-h-[160px]"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="storeName" className="inline-flex items-center gap-2">
-                  <Store className="h-4 w-4 text-muted-foreground" />
-                  Store name
-                </Label>
-                <Input
-                  id="storeName"
-                  required
-                  value={formData.storeName}
-                  onChange={(event) => setFormData((current) => ({ ...current, storeName: event.target.value }))}
-                  placeholder="Your Shopify store"
-                />
-              </div>
+                {errorMessage ? (
+                  <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-600">
+                    {errorMessage}
+                  </div>
+                ) : null}
 
-              <div className="space-y-2">
-                <Label htmlFor="message">How can we help?</Label>
-                <Textarea
-                  id="message"
-                  required
-                  value={formData.message}
-                  onChange={(event) => setFormData((current) => ({ ...current, message: event.target.value }))}
-                  placeholder="Tell us what you're looking to improve with wishlists."
-                  className="min-h-36"
-                />
-              </div>
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Submissions include anti-spam checks and rate limiting before being emailed.
-                </p>
-                <Button type="submit" size="lg" disabled={isSubmitting} className="gap-2 sm:min-w-44">
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    "Send message"
-                  )}
+                <Button type="submit" size="lg" disabled={loading}>
+                  {loading ? "Submitting..." : "Submit"}
                 </Button>
-              </div>
-
-              <input
-                type="text"
-                name="companyWebsite"
-                tabIndex={-1}
-                autoComplete="off"
-                className="hidden"
-                aria-hidden="true"
-                value={companyWebsite}
-                onChange={(event) => setCompanyWebsite(event.target.value)}
-              />
-            </form>
+              </form>
+            </div>
           </div>
         </section>
       </main>
+
       <FooterCTA />
     </div>
   );

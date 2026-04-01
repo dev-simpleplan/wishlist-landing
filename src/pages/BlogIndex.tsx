@@ -14,7 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { isUsingMockStrapi, listBlogCategories, listBlogPosts } from "@/lib/strapi";
+import {
+  isUsingMockStrapi,
+  listBlogCategories,
+  listBlogPosts,
+} from "@/lib/strapi";
 import type { BlogSortOption } from "@/types/blog";
 
 const SORT_OPTIONS: Array<{ value: BlogSortOption; label: string }> = [
@@ -26,12 +30,19 @@ const SORT_OPTIONS: Array<{ value: BlogSortOption; label: string }> = [
 
 const BlogIndex = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") ?? ""
+  );
   const deferredSearch = useDeferredValue(searchInput);
   const selectedCategory = searchParams.get("category") ?? "";
-  const selectedSort = (searchParams.get("sort") as BlogSortOption | null) ?? "newest";
+  const selectedSort =
+    (searchParams.get("sort") as BlogSortOption | null) ?? "newest";
 
-  const { data: posts = [], isLoading, isError } = useQuery({
+  const {
+    data: posts = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["blog-posts", deferredSearch, selectedCategory, selectedSort],
     queryFn: () =>
       listBlogPosts({
@@ -54,7 +65,11 @@ const BlogIndex = () => {
     setSearchInput(searchParams.get("search") ?? "");
   }, [searchParams]);
 
-  const updateFilters = (next: { search?: string; category?: string; sort?: BlogSortOption }) => {
+  const updateFilters = (next: {
+    search?: string;
+    category?: string;
+    sort?: BlogSortOption;
+  }) => {
     const params = new URLSearchParams(searchParams);
 
     const searchValue = next.search ?? searchInput;
@@ -87,15 +102,23 @@ const BlogIndex = () => {
     setSearchParams({}, { replace: true });
   };
 
-  const hasActiveFilters = Boolean(searchInput.trim() || selectedCategory || selectedSort !== "newest");
-  const showFeatured = !hasActiveFilters && posts.length > 0;
-  const featuredPost = showFeatured ? posts.find((post) => post.featured) ?? posts[0] : null;
-  const otherPosts = featuredPost ? posts.filter((post) => post.id !== featuredPost.id) : posts;
+  const hasActiveFilters = Boolean(
+    searchInput.trim() || selectedCategory || selectedSort !== "newest"
+  );
 
+  const showFeatured = !hasActiveFilters && posts.length > 0;
+  const featuredPost = showFeatured
+    ? posts.find((post) => post.featured) ?? posts[0]
+    : null;
+
+  const otherPosts = featuredPost
+    ? posts.filter((post) => post.id !== featuredPost.id)
+    : posts;
 
   return (
     <div className="min-h-screen bg-background">
       <NavHeader />
+
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         <section className="container mx-auto px-4">
           <div className="rounded-[2rem] border border-border/70 bg-gradient-to-br from-brand-yellow-light via-background to-brand-green-light px-6 py-12 shadow-sm md:px-10 md:py-16">
@@ -103,18 +126,28 @@ const BlogIndex = () => {
               <span className="inline-flex rounded-full bg-brand-dark px-4 py-2 text-sm font-semibold text-brand-cream">
                 Blog
               </span>
+
               <h1 className="text-4xl font-bold leading-tight md:text-6xl">
-                Articles on wishlists, retention, and Shopify conversion strategy.
+                Articles on wishlists, retention, and Shopify conversion
+                strategy.
               </h1>
+
               <p className="text-lg leading-8 text-muted-foreground md:text-xl">
-                Use this section for product education, growth playbooks, release notes, and search-driven content from Strapi.
+                Use this section for product education, growth playbooks,
+                release notes, and search-driven content from Strapi.
               </p>
+
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
-                  <a href="https://apps.shopify.com/wishlistsuite" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://apps.shopify.com/wishlistsuite"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Install App
                   </a>
                 </Button>
+
                 <Button asChild variant="outline" size="lg">
                   <Link to="/contact">
                     Talk to the team
@@ -129,7 +162,8 @@ const BlogIndex = () => {
         {isUsingMockStrapi() ? (
           <section className="container mx-auto px-4 pt-8">
             <div className="rounded-2xl border border-dashed border-border bg-card px-5 py-4 text-sm text-muted-foreground">
-              Mock blog data is active because `VITE_STRAPI_URL` is not set yet. Add your Strapi URL in `.env` to load real content.
+              Mock blog data is active because `VITE_STRAPI_URL` is not set yet.
+              Add your Strapi URL in `.env` to load real content.
             </div>
           </section>
         ) : null}
@@ -154,10 +188,17 @@ const BlogIndex = () => {
               <div className="flex items-center gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-border/70 bg-background px-3">
                   <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                  <Select value={selectedSort} onValueChange={(value: BlogSortOption) => updateFilters({ sort: value })}>
+
+                  <Select
+                    value={selectedSort}
+                    onValueChange={(value: BlogSortOption) =>
+                      updateFilters({ sort: value })
+                    }
+                  >
                     <SelectTrigger className="h-12 border-0 bg-transparent px-0 shadow-none focus:ring-0">
                       <SelectValue placeholder="Sort posts" />
                     </SelectTrigger>
+
                     <SelectContent>
                       {SORT_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
@@ -169,7 +210,12 @@ const BlogIndex = () => {
                 </div>
 
                 {hasActiveFilters ? (
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="shrink-0"
+                  >
                     <X className="h-4 w-4" />
                     Clear
                   </Button>
@@ -186,10 +232,13 @@ const BlogIndex = () => {
               >
                 All topics
               </Button>
+
               {categories.map((category) => (
                 <Button
                   key={category.slug}
-                  variant={selectedCategory === category.slug ? "secondary" : "outline"}
+                  variant={
+                    selectedCategory === category.slug ? "secondary" : "outline"
+                  }
                   size="sm"
                   onClick={() => updateFilters({ category: category.slug })}
                   className="rounded-full"
@@ -206,11 +255,13 @@ const BlogIndex = () => {
             </div>
           ) : isError ? (
             <div className="rounded-3xl border border-destructive/30 bg-card p-8 text-destructive">
-              Could not load blog posts from Strapi. Check your environment variables and API permissions.
+              Could not load blog posts from Strapi. Check your environment
+              variables and API permissions.
             </div>
           ) : posts.length === 0 ? (
             <div className="rounded-3xl border border-border bg-card p-8 text-muted-foreground">
-              No posts found for the current search or filters. Adjust the controls above or publish more articles in Strapi.
+              No posts found for the current search or filters. Adjust the
+              controls above or publish more articles in Strapi.
             </div>
           ) : (
             <div className="space-y-10">
@@ -228,7 +279,8 @@ const BlogIndex = () => {
                   <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     {hasActiveFilters ? "Results" : "Latest posts"}
                   </p>
-                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+                  <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {otherPosts.map((post) => (
                       <BlogCard key={post.id} post={post} />
                     ))}
@@ -239,6 +291,7 @@ const BlogIndex = () => {
           )}
         </section>
       </main>
+
       <FooterCTA />
     </div>
   );
