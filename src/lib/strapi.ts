@@ -237,11 +237,11 @@ export const listBlogCategories = async () => {
 };
 
 export const getBlogPostBySlug = async (slug: string) => {
-  const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
-    `/api/blog-posts?filters[slug][$eq]=${slug}&populate=*`
+  const response = await strapiFetch<any>(
+    `/api/blog-posts?filters[slug][$eq]=${slug}&filters[publishedAt][$notNull]=true&populate=*`
   );
 
-  return response.data[0] ? normalizePost(response.data[0]) : null;
+  return response?.data?.[0] || null;
 };
 
 export const getRelatedBlogPosts = async (slug: string) => {
