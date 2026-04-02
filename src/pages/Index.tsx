@@ -24,12 +24,6 @@ const Index = () => {
     queryFn: getHomePage,
   });
 
-  const home = useMemo(() => getEntityData(homeData?.data ?? homeData), [homeData]);
-  
-  // ADD HERE - inside the component
-  console.log('home data:', home);
-  console.log('hero image:', home?.hero_image);
-
   const { data: navbarData } = useQuery({
     queryKey: ["navbar"],
     queryFn: getNavbar,
@@ -42,6 +36,10 @@ const Index = () => {
 
   const home = useMemo(() => getEntityData(homeData?.data ?? homeData), [homeData]);
   const navbar = useMemo(() => getEntityData(navbarData?.data ?? navbarData), [navbarData]);
+
+  console.log('home data:', home);
+  console.log('hero image:', home?.hero_image);
+
   const faqItems = useMemo(() => {
     const rows = Array.isArray(faqItemsData?.data) ? faqItemsData.data : [];
 
