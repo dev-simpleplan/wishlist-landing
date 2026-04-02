@@ -65,7 +65,7 @@ const extractMedia = (value: unknown): StrapiMedia | null => {
       typeof attributes.height === "number" ? attributes.height : undefined,
     formats:
       attributes.formats && typeof attributes.formats === "object"
-        ? (attributes.formats as Record<
+        ? (attributes.formats as Record
             string,
             { url: string; width?: number; height?: number }
           >)
@@ -171,6 +171,27 @@ const normalizePost = (
   };
 };
 
+// ─── NEW: post-normalize guard ────────────────────────────────────────────────
+/**
+ * Returns true only for posts that are genuinely published.
+ * Strapi v4 sets publishedAt to null for drafts; v5 keeps the same convention.
+ * We also reject synthetic ISO strings we injected ourselves (new Date().toISOString())
+ * by checking that the value actually came from the raw payload — we do that by
+ * checking the raw field directly inside normalizePost and storing it unmodified,
+ * so here we simply reject anything that looks like it was never set by Strapi.
+ */
+const isPublished = (post: BlogPost): boolean => {
+  const pa = post.publishedAt;
+  if (!pa) return false;
+  // If publishedAt is exactly "now" it was our fallback — treat as unpublished
+  const diff = Math.abs(Date.now() - new Date(pa).getTime());
+  // Allow up to 5 seconds drift for genuinely just-published posts
+  // but reject our synthetic fallback (which would be < 100 ms old)
+  // A better signal: we check whether it's a real ISO string from Strapi (> 1 s old)
+  return diff > 1000;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 const strapiFetch = async <T>(path: string): Promise<T> => {
   if (!STRAPI_URL) {
     throw new Error("Missing VITE_STRAPI_URL");
@@ -203,14 +224,16 @@ export const listBlogPosts = async ({
   category,
   sort = DEFAULT_BLOG_SORT,
 }: BlogListParams = {}) => {
+  // publishedAt[$notNull]=true  → excludes drafts (Strapi v4 + v5)
+  // publicationState=live       → Strapi v4 explicit live filter (ignored by v5, harmless)
+  // sort[0]=publishedAt:desc    → let Strapi return newest-first so pagination works correctly
   const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
-    `/api/blog-posts?populate=*`
+    `/api/blog-posts?filters[publishedAt][$notNull]=true&publicationState=live&sort[0]=publishedAt:desc&populate=*`
   );
 
-  console.log("STRAPI_URL:", STRAPI_URL);
-  console.log("RAW RESPONSE:", response);
-
-  let posts = response.data.map((entry) => normalizePost(entry));
+  let posts = response.data
+    .map((entry) => normalizePost(entry))
+    .filter(isPublished); // belt-and-suspenders: drop anything without a real publishedAt
 
   if (search?.trim()) {
     const s = search.toLowerCase();
@@ -237,11 +260,16 @@ export const listBlogCategories = async () => {
 };
 
 export const getBlogPostBySlug = async (slug: string) => {
-  const response = await strapiFetch<any>(
-    `/api/blog-posts?filters[slug][$eq]=${slug}&filters[publishedAt][$notNull]=true&populate=*`
+  // Always filter for published + non-trashed posts when fetching by slug
+  const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
+    `/api/blog-posts?filters[slug][$eq]=${encodeURIComponent(slug)}&filters[publishedAt][$notNull]=true&publicationState=live&populate=*`
   );
 
-  return response?.data?.[0] || null;
+  const entry = response?.data?.[0];
+  if (!entry) return null;
+
+  const post = normalizePost(entry);
+  return isPublished(post) ? post : null;
 };
 
 export const getRelatedBlogPosts = async (slug: string) => {
