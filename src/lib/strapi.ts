@@ -310,28 +310,6 @@ export const listBlogPosts = async ({
   category,
   sort = DEFAULT_BLOG_SORT,
 }: BlogListParams = {}) => {
-  if (!STRAPI_URL) {
-    const normalizedSearch = search?.trim().toLowerCase();
-
-    const filteredPosts = mockPosts.filter((post) => {
-      const matchesSearch = normalizedSearch
-        ? [
-            post.title,
-            post.excerpt,
-            typeof post.content === "string" ? post.content : getTextFromBlocks(post.content),
-          ]
-            .join(" ")
-            .toLowerCase()
-            .includes(normalizedSearch)
-        : true;
-
-      const matchesCategory = category ? post.category?.slug === category : true;
-
-      return matchesSearch && matchesCategory;
-    });
-
-    return sortPosts(filteredPosts, sort);
-  }
 
   const response = await strapiFetch<StrapiCollectionResponse<Record<string, unknown>>>(
     `/api/blog-posts?${buildBlogQueryString({ search, category, sort })}`,
