@@ -35,9 +35,11 @@ const HeroSection = ({ home }: HeroSectionProps) => {
     is_external: true,
   };
 
-  const heroImage = home?.hero_image?.url
-    ? `${import.meta.env.VITE_STRAPI_URL}${home.hero_image.url}`
-    : heroPhone;
+const heroImage = home?.hero_image?.url
+  ? home.hero_image.url.startsWith("http")
+    ? home.hero_image.url
+    : `${import.meta.env.VITE_STRAPI_URL}${home.hero_image.url}`
+  : heroPhone;
 
   return (
     <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 overflow-hidden">
