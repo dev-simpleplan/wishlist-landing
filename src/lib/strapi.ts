@@ -207,6 +207,9 @@ export const listBlogPosts = async ({
     `/api/blog-posts?populate=*`
   );
 
+  console.log("STRAPI_URL:", STRAPI_URL);
+  console.log("RAW RESPONSE:", response);
+
   let posts = response.data.map((entry) => normalizePost(entry));
 
   if (search?.trim()) {
