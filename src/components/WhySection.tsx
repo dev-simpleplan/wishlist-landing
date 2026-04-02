@@ -4,82 +4,74 @@ type WhySectionProps = {
   home?: any;
 };
 
-const defaultReasons = [
-  {
-    icon: Repeat2,
-    title: "Recover Lost Buying Intent",
-    description:
-      "Don't let 'maybe' become 'never.' Automated Back-in-Stock and Price Drop alerts for wishlisted items see up to 10x higher engagement than standard marketing emails.",
-  },
-  {
-    icon: Clock3,
-    title: "Shorten Decision Time",
-    description:
-      "Wishlists streamline the path to purchase. When shoppers curate favorites and compare over time, time from first discovery to checkout is reduced by an average of 15%.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Increase Conversions",
-    description:
-      "Turn browsers into buyers. Wishlist users tend to build larger carts over time, driving a measurable 20% lift in Average Order Value for returning customers.",
-  },
-];
-
-const iconFallbacks = [Repeat2, Clock3, TrendingUp];
+// ✅ Map icon names from Strapi → Lucide icons
+const iconMap: Record<string, any> = {
+  repeat: Repeat2,
+  clock: Clock3,
+  trending: TrendingUp,
+};
 
 const WhySection = ({ home }: WhySectionProps) => {
   const chartValues = Array.isArray(home?.why_chart_values)
     ? home.why_chart_values
-    : [28, 34, 45, 53, 67, 78];
+    : [];
 
-  const reasons =
-    Array.isArray(home?.why_reason_cards) && home.why_reason_cards.length > 0
-      ? home.why_reason_cards.map((item: any, index: number) => ({
-          ...item,
-          icon: iconFallbacks[index] || TrendingUp,
-        }))
-      : defaultReasons;
+  const reasons = Array.isArray(home?.why_reason_cards)
+    ? home.why_reason_cards
+    : [];
+
+  // ❌ Hide section if no API
+  if (!home) return null;
 
   return (
     <section className="pt-20 pb-6 md:pt-24 md:pb-8">
       <div className="container mx-auto px-4">
+        
+        {/* Heading */}
         <div className="max-w-3xl">
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-foreground leading-tight">
-            {home?.why_heading || "Why Wishlists Matter"}
+            {home?.why_heading}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-            {home?.why_description ||
-              "Wishlists reduce cart abandonment, surface purchase intent, and bring shoppers back with purpose. The result is better retention, stronger conversion, and higher revenue per returning customer."}
+            {home?.why_description}
           </p>
         </div>
 
+        {/* Chart + Donut */}
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          
+          {/* Bar Chart */}
           <article className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:col-span-2">
             <p className="text-sm font-medium text-muted-foreground">
-              {home?.why_chart_label || "Higher Retention Post-Adoption"}
+              {home?.why_chart_label}
             </p>
+
             <div className="mt-5 grid h-40 grid-cols-6 items-end gap-3 rounded-xl bg-muted/50 p-3">
               {chartValues.map((value: number, index: number) => (
-                <div key={index} className="flex h-full w-full flex-col items-center justify-end gap-2">
+                <div key={index} className="flex flex-col items-center justify-end gap-2 h-full">
                   <div
                     className="w-full rounded-md bg-brand-green"
                     style={{ height: `${value}%` }}
                   />
-                  <span className="text-[11px] text-muted-foreground">W{index + 1}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    W{index + 1}
+                  </span>
                 </div>
               ))}
             </div>
+
             <p className="mt-4 text-sm text-muted-foreground">
-              {home?.why_chart_note ||
-                "Merchants report a 25-40% increase in return-visitor sessions within 60 days of launching wishlists."}
+              {home?.why_chart_note}
             </p>
           </article>
 
+          {/* Donut */}
           <article className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <p className="text-sm font-medium text-muted-foreground">
-              {home?.why_donut_label || "Intent to Purchase"}
+              {home?.why_donut_label}
             </p>
-            <div className="mt-4 flex items-center justify-center">
+
+            <div className="mt-4 flex justify-center">
               <div
                 className="relative h-28 w-28 rounded-full"
                 style={{
@@ -89,31 +81,39 @@ const WhySection = ({ home }: WhySectionProps) => {
               >
                 <div className="absolute inset-3 rounded-full bg-card flex items-center justify-center">
                   <span className="text-xl font-heading font-bold text-foreground">
-                    {home?.why_donut_value || "3.5x"}
+                    {home?.why_donut_value}
                   </span>
                 </div>
               </div>
             </div>
+
             <p className="mt-4 text-sm text-muted-foreground text-center">
-              {home?.why_donut_note ||
-                "Shoppers who use wishlists are 3.5x more likely to convert than those who do not."}
+              {home?.why_donut_note}
             </p>
           </article>
         </div>
 
+        {/* Reason Cards */}
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {reasons.map((reason: any, index: number) => {
-            const Icon = reason.icon || iconFallbacks[index] || TrendingUp;
+            const Icon =
+              iconMap[reason?.icon_name?.toLowerCase()] || TrendingUp;
+
             return (
-              <article key={reason.title} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <article
+                key={index}
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+              >
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-green-light">
                   <Icon className="h-5 w-5 text-brand-green" />
                 </div>
+
                 <h3 className="text-xl font-heading font-semibold text-foreground">
-                  {reason.title}
+                  {reason?.title}
                 </h3>
+
                 <p className="mt-2 text-muted-foreground leading-relaxed">
-                  {reason.description}
+                  {reason?.description}
                 </p>
               </article>
             );
