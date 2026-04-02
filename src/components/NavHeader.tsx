@@ -8,18 +8,6 @@ type NavHeaderProps = {
   navbar?: any;
 };
 
-const defaultLinks = [
-  { text: "Home", url: "/" },
-  { text: "Blog", url: "/blog" },
-  { text: "FAQ", url: "/faq" },
-  { text: "Contact", url: "/contact" },
-  {
-    text: "Help Docs",
-    url: "https://wishlistsuite.gitbook.io/wishlistsuite-docs",
-    is_external: true,
-  },
-];
-
 const NavHeader = ({ navbar }: NavHeaderProps) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,21 +23,16 @@ const NavHeader = ({ navbar }: NavHeaderProps) => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  const links = Array.isArray(navbar?.menu_items) && navbar.menu_items.length > 0
+  // ✅ Only API data
+  const links = Array.isArray(navbar?.menu_items)
     ? navbar.menu_items
-    : defaultLinks;
+    : [];
 
-  const bookDemo = navbar?.book_demo_cta || {
-    text: "Book Demo",
-    url: "https://calendar.app.google/GSETSTRMgj7eVL7e6",
-    is_external: true,
-  };
+  const bookDemo = navbar?.book_demo_cta;
+  const installApp = navbar?.install_app_cta;
 
-  const installApp = navbar?.install_app_cta || {
-    text: "Install App",
-    url: "https://apps.shopify.com/wishlistsuite",
-    is_external: true,
-  };
+  // ❌ Optional: hide navbar if no data
+  if (!navbar) return null;
 
   return (
     <header
@@ -65,10 +48,11 @@ const NavHeader = ({ navbar }: NavHeaderProps) => {
           </span>
         </Link>
 
+        {/* Desktop Menu */}
         <nav className="hidden md:flex items-center gap-8">
           {links.map((link: any, index: number) => (
             <a
-              key={link.text || index}
+              key={index}
               href={link.url}
               target={link.is_external ? "_blank" : undefined}
               rel={link.is_external ? "noopener noreferrer" : undefined}
@@ -79,47 +63,49 @@ const NavHeader = ({ navbar }: NavHeaderProps) => {
           ))}
         </nav>
 
+        {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button asChild variant="outline" size="sm">
-            <a
-              href={bookDemo.url}
-              target={bookDemo.is_external ? "_blank" : undefined}
-              rel={bookDemo.is_external ? "noreferrer" : undefined}
-            >
-              {bookDemo.text}
-            </a>
-          </Button>
-          <Button asChild size="sm">
-            <a
-              href={installApp.url}
-              target={installApp.is_external ? "_blank" : undefined}
-              rel={installApp.is_external ? "noreferrer" : undefined}
-            >
-              {installApp.text}
-            </a>
-          </Button>
+          {bookDemo?.url && (
+            <Button asChild variant="outline" size="sm">
+              <a
+                href={bookDemo.url}
+                target={bookDemo.is_external ? "_blank" : undefined}
+                rel={bookDemo.is_external ? "noreferrer" : undefined}
+              >
+                {bookDemo.text}
+              </a>
+            </Button>
+          )}
+
+          {installApp?.url && (
+            <Button asChild size="sm">
+              <a
+                href={installApp.url}
+                target={installApp.is_external ? "_blank" : undefined}
+                rel={installApp.is_external ? "noreferrer" : undefined}
+              >
+                {installApp.text}
+              </a>
+            </Button>
+          )}
         </div>
 
+        {/* Mobile Toggle */}
         <button
           type="button"
           className="md:hidden text-foreground"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav-menu"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
+      {/* Mobile Menu */}
       {mobileOpen && (
-        <div
-          id="mobile-nav-menu"
-          className="md:hidden bg-card border-t border-border px-4 py-4 space-y-4 animate-fade-in"
-        >
+        <div className="md:hidden bg-card border-t border-border px-4 py-4 space-y-4">
           {links.map((link: any, index: number) => (
             <a
-              key={link.text || index}
+              key={index}
               href={link.url}
               target={link.is_external ? "_blank" : undefined}
               rel={link.is_external ? "noopener noreferrer" : undefined}
@@ -129,25 +115,29 @@ const NavHeader = ({ navbar }: NavHeaderProps) => {
               {link.text}
             </a>
           ))}
+
           <div className="flex gap-3 pt-2">
-            <Button asChild variant="outline" size="sm" className="flex-1">
-              <a
-                href={bookDemo.url}
-                target={bookDemo.is_external ? "_blank" : undefined}
-                rel={bookDemo.is_external ? "noreferrer" : undefined}
-              >
-                {bookDemo.text}
-              </a>
-            </Button>
-            <Button asChild size="sm" className="flex-1">
-              <a
-                href={installApp.url}
-                target={installApp.is_external ? "_blank" : undefined}
-                rel={installApp.is_external ? "noreferrer" : undefined}
-              >
-                {installApp.text}
-              </a>
-            </Button>
+            {bookDemo?.url && (
+              <Button asChild variant="outline" size="sm" className="flex-1">
+                <a
+                  href={bookDemo.url}
+                  target={bookDemo.is_external ? "_blank" : undefined}
+                >
+                  {bookDemo.text}
+                </a>
+              </Button>
+            )}
+
+            {installApp?.url && (
+              <Button asChild size="sm" className="flex-1">
+                <a
+                  href={installApp.url}
+                  target={installApp.is_external ? "_blank" : undefined}
+                >
+                  {installApp.text}
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       )}
