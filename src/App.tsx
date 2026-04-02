@@ -15,6 +15,7 @@ import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
 import BlogCategory from "./pages/BlogCategory";
 import FAQ from "./pages/FAQ";
+import Layout from "@/layout/Layout";
 
 
 const queryClient = new QueryClient();
