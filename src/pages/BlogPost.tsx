@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,6 +20,14 @@ import {
   getRelatedBlogPosts,
   getStrapiAssetUrl,
 } from "@/lib/strapi";
+
+
+import { getNavbar } from "@/lib/strapi";
+
+const { data: navbar } = useQuery({
+  queryKey: ["navbar"],
+  queryFn: getNavbar,
+});
 
 const SITE_URL = window.location.origin;
 
@@ -149,7 +158,7 @@ const BlogPost = () => {
         </Helmet>
       )}
 
-      <NavHeader />
+      <NavHeader navbar={navbar} />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         {/* Loading */}

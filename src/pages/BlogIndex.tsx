@@ -20,6 +20,14 @@ import {
 } from "@/lib/strapi";
 import type { BlogSortOption } from "@/types/blog";
 
+
+import { getNavbar } from "@/lib/strapi";
+
+const { data: navbar } = useQuery({
+  queryKey: ["navbar"],
+  queryFn: getNavbar,
+});
+
 const BlogIndex = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState(
@@ -110,7 +118,7 @@ const BlogIndex = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavHeader />
+      <NavHeader navbar={navbar} />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         

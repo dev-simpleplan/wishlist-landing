@@ -15,6 +15,14 @@ import {
 
 const SITE_URL = window.location.origin;
 
+
+import { getNavbar } from "@/lib/strapi";
+
+const { data: navbar } = useQuery({
+  queryKey: ["navbar"],
+  queryFn: getNavbar,
+});
+
 const BlogCategory = () => {
   const { slug = "" } = useParams();
 
@@ -83,7 +91,7 @@ const BlogCategory = () => {
         {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
       </Helmet>
 
-      <NavHeader />
+      <NavHeader navbar={navbar} />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         {isLoading ? (
