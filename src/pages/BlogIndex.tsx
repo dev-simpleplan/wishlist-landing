@@ -23,12 +23,15 @@ import type { BlogSortOption } from "@/types/blog";
 
 import { getNavbar } from "@/lib/strapi";
 
-const { data: navbar } = useQuery({
-  queryKey: ["navbar"],
-  queryFn: getNavbar,
-});
 
 const BlogIndex = () => {
+
+  const { data: navbar } = useQuery({
+    queryKey: ["navbar"],
+    queryFn: getNavbar,
+  });
+
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState(
     searchParams.get("search") ?? ""

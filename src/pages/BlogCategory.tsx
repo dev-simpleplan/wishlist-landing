@@ -18,12 +18,15 @@ const SITE_URL = window.location.origin;
 
 import { getNavbar } from "@/lib/strapi";
 
-const { data: navbar } = useQuery({
-  queryKey: ["navbar"],
-  queryFn: getNavbar,
-});
+
 
 const BlogCategory = () => {
+
+  const { data: navbar } = useQuery({
+    queryKey: ["navbar"],
+    queryFn: getNavbar,
+  });
+  
   const { slug = "" } = useParams();
 
   const {

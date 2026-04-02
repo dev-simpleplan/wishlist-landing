@@ -24,14 +24,14 @@ import {
 
 import { getNavbar } from "@/lib/strapi";
 
-const { data: navbar } = useQuery({
-  queryKey: ["navbar"],
-  queryFn: getNavbar,
-});
-
 const SITE_URL = window.location.origin;
 
 const BlogPost = () => {
+
+  const { data: navbar } = useQuery({
+    queryKey: ["navbar"],
+    queryFn: getNavbar,
+  });
   const { slug = "" } = useParams();
 
   const {
