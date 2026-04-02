@@ -26,7 +26,7 @@ const BlogCategory = () => {
     queryKey: ["navbar"],
     queryFn: getNavbar,
   });
-  
+
   const { slug = "" } = useParams();
 
   const {
@@ -94,7 +94,6 @@ const BlogCategory = () => {
         {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
       </Helmet>
 
-      <NavHeader navbar={navbar} />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         {isLoading ? (

@@ -158,8 +158,6 @@ const BlogPost = () => {
         </Helmet>
       )}
 
-      <NavHeader navbar={navbar} />
-
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         {/* Loading */}
         {isLoading && (

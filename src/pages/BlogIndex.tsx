@@ -121,7 +121,6 @@ const BlogIndex = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavHeader navbar={navbar} />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
         
