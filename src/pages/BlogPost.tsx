@@ -279,8 +279,6 @@ const BlogPost = () => {
           </>
         )}
       </main>
-
-      <FooterCTA />
     </div>
   );
 };

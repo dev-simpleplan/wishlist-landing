@@ -14,11 +14,7 @@ import {
 } from "@/lib/strapi";
 
 const SITE_URL = window.location.origin;
-
-
 import { getNavbar } from "@/lib/strapi";
-
-
 
 const BlogCategory = () => {
 
@@ -203,8 +199,6 @@ const BlogCategory = () => {
           </>
         )}
       </main>
-
-      <FooterCTA />
     </div>
   );
 };

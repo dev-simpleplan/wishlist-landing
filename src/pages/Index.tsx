@@ -85,7 +85,6 @@ const Index = () => {
         <CustomizationSection home={home} />
         <ReviewsSection home={home} />
         <FAQSection home={home} faqItems={faqItems} />
-        <FooterCTA home={home} />
       </main>
     </div>
   );

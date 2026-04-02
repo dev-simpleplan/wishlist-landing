@@ -307,8 +307,6 @@ const FAQ = () => {
           </div>
         </section>
       </main>
-
-      <FooterCTA />
     </div>
   );
 };

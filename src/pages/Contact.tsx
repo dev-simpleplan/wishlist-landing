@@ -188,7 +188,6 @@ const Contact = () => {
         </section>
       </main>
 
-      <FooterCTA />
     </div>
   );
 };
