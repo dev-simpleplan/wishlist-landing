@@ -1,11 +1,4 @@
 import { useMemo } from "react";
-
-const home = useMemo(() => getEntityData(homeData?.data ?? homeData), [homeData]);
-
-// ADD THIS TEMPORARILY
-console.log('home data:', home);
-console.log('hero image:', home?.hero_image);
-
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import NavHeader from "@/components/NavHeader";
@@ -30,6 +23,12 @@ const Index = () => {
     queryKey: ["home-page"],
     queryFn: getHomePage,
   });
+
+  const home = useMemo(() => getEntityData(homeData?.data ?? homeData), [homeData]);
+  
+  // ADD HERE - inside the component
+  console.log('home data:', home);
+  console.log('hero image:', home?.hero_image);
 
   const { data: navbarData } = useQuery({
     queryKey: ["navbar"],
