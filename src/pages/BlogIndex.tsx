@@ -239,8 +239,6 @@ const BlogIndex = () => {
           )}
         </section>
       </main>
-
-      <FooterCTA />
     </div>
   );
 };
