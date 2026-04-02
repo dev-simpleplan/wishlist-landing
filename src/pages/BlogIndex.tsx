@@ -19,12 +19,15 @@ import {
   listBlogPosts,
 } from "@/lib/strapi";
 import type { BlogSortOption } from "@/types/blog";
-
-
 import { getNavbar } from "@/lib/strapi";
 
 
 const BlogIndex = () => {
+
+  const { data: navbarData } = useQuery({
+    queryKey: ["navbar"],
+    queryFn: getNavbar,
+  });
 
   const { data: navbar } = useQuery({
     queryKey: ["navbar"],
