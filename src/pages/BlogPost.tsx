@@ -35,7 +35,7 @@ const BlogPost = () => {
     enabled: Boolean(slug),
   });
 
-  const { data: relatedPosts = [] } = useQuery({
+  const { data: relatedPosts } = useQuery({
     queryKey: ["related-blog-posts", slug],
     queryFn: () => getRelatedBlogPosts(slug),
     enabled: Boolean(slug),
@@ -43,18 +43,13 @@ const BlogPost = () => {
 
   const canonicalUrl = `${SITE_URL}/blog/${slug}`;
 
-  const seoTitle =
-    post?.seoTitle || (post ? `${post.title} | WishlistSuite Blog` : "Blog Post");
-
-  const seoDescription =
-    post?.seoDescription ||
-    post?.excerpt ||
-    "Read the latest wishlist strategy, retention, and Shopify growth insights.";
+  const seoTitle = post?.seoTitle;
+  const seoDescription = post?.seoDescription;
 
   const heroImage = getStrapiAssetUrl(post?.coverImage);
 
   const renderContent = useMemo(() => {
-    if (!post) return null;
+    if (!post?.content) return null;
 
     if (typeof post.content === "string") {
       return post.content
@@ -75,7 +70,7 @@ const BlogPost = () => {
       return post.content.map((block, index) => {
         const blockText =
           block.text ??
-          block.children?.map((child) => child.text ?? "").join(" ") ??
+          block.children?.map((child: any) => child.text ?? "").join(" ") ??
           "";
 
         if (!blockText.trim()) return null;
@@ -104,8 +99,8 @@ const BlogPost = () => {
 
         if (block.type === "list") {
           const items =
-            block.children?.map((child, childIndex) => (
-              <li key={childIndex}>{child.text}</li>
+            block.children?.map((child: any, i: number) => (
+              <li key={i}>{child.text}</li>
             )) ?? [];
 
           return (
@@ -134,33 +129,40 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        <link rel="canonical" href={canonicalUrl} />
+      {/* ✅ SEO (only if API exists) */}
+      {post && (
+        <Helmet>
+          <title>{seoTitle}</title>
+          <meta name="description" content={seoDescription} />
+          <link rel="canonical" href={canonicalUrl} />
 
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:url" content={canonicalUrl} />
-        {heroImage ? <meta property="og:image" content={heroImage} /> : null}
+          <meta property="og:type" content="article" />
+          <meta property="og:title" content={seoTitle} />
+          <meta property="og:description" content={seoDescription} />
+          <meta property="og:url" content={canonicalUrl} />
+          {heroImage && <meta property="og:image" content={heroImage} />}
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoTitle} />
-        <meta name="twitter:description" content={seoDescription} />
-        {heroImage ? <meta name="twitter:image" content={heroImage} /> : null}
-      </Helmet>
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={seoTitle} />
+          <meta name="twitter:description" content={seoDescription} />
+          {heroImage && <meta name="twitter:image" content={heroImage} />}
+        </Helmet>
+      )}
 
       <NavHeader />
 
       <main className="pb-20 pt-28 md:pb-28 md:pt-36">
-        {isLoading ? (
+        {/* Loading */}
+        {isLoading && (
           <section className="container mx-auto px-4">
             <div className="rounded-2xl border border-border bg-card p-8 text-muted-foreground">
               Loading blog post...
             </div>
           </section>
-        ) : isError || !post ? (
+        )}
+
+        {/* Error */}
+        {isError && (
           <section className="container mx-auto px-4">
             <div className="rounded-2xl border border-destructive/30 bg-card p-8 text-destructive">
               Could not load this blog post.
@@ -175,129 +177,98 @@ const BlogPost = () => {
               </Button>
             </div>
           </section>
-        ) : (
+        )}
+
+        {/* Content */}
+        {post && (
           <>
             <section className="container mx-auto px-4">
               <div className="max-w-5xl">
+                {/* Breadcrumb */}
                 <nav className="mb-6 text-sm text-muted-foreground">
-                  <Link to="/" className="transition-colors hover:text-foreground">
-                    Home
-                  </Link>
+                  <Link to="/">Home</Link>
                   <span className="mx-2">/</span>
-                  <Link to="/blog" className="transition-colors hover:text-foreground">
-                    Blog
-                  </Link>
+                  <Link to="/blog">Blog</Link>
                   <span className="mx-2">/</span>
                   <span className="text-foreground">{post.title}</span>
                 </nav>
 
+                {/* Meta */}
                 <div className="mb-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                  {post.category ? (
-                    <span className="inline-flex items-center rounded-full bg-brand-yellow-light px-3 py-1 font-medium text-foreground">
+                  {post.category && (
+                    <span className="inline-flex rounded-full bg-brand-yellow-light px-3 py-1 font-medium text-foreground">
                       {post.category.name}
                     </span>
-                  ) : null}
+                  )}
 
-                  <span className="inline-flex items-center gap-1">
-                    <CalendarDays className="h-4 w-4" />
-                    {formatBlogDate(post.publishedAt)}
-                  </span>
+                  {post.publishedAt && (
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarDays className="h-4 w-4" />
+                      {formatBlogDate(post.publishedAt)}
+                    </span>
+                  )}
 
-                  {post.readTime ? (
+                  {post.readTime && (
                     <span className="inline-flex items-center gap-1">
                       <Clock3 className="h-4 w-4" />
                       {post.readTime}
                     </span>
-                  ) : null}
+                  )}
 
-                  <span className="inline-flex items-center gap-1">
-                    <User2 className="h-4 w-4" />
-                    {post.author?.name ?? "WishlistSuite Team"}
-                  </span>
+                  {post.author?.name && (
+                    <span className="inline-flex items-center gap-1">
+                      <User2 className="h-4 w-4" />
+                      {post.author.name}
+                    </span>
+                  )}
                 </div>
 
-                <h1 className="max-w-4xl text-3xl font-bold leading-tight text-foreground md:text-5xl">
+                {/* Title */}
+                <h1 className="text-3xl md:text-5xl font-bold text-foreground">
                   {post.title}
                 </h1>
 
-                {post.excerpt ? (
-                  <p className="mt-5 max-w-4xl text-lg leading-8 text-muted-foreground">
+                {/* Excerpt */}
+                {post.excerpt && (
+                  <p className="mt-5 text-lg text-muted-foreground">
                     {post.excerpt}
                   </p>
-                ) : null}
+                )}
               </div>
             </section>
 
-            <section className="container mx-auto px-4 pt-8">
-              <div className="max-w-5xl overflow-hidden rounded-3xl">
-                <div className="min-h-[280px] overflow-hidden md:min-h-[460px]">
-                  <img
-                    src={heroImage}
-                    alt={post.coverImage?.alternativeText ?? post.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+            {/* Image */}
+            {heroImage && (
+              <section className="container mx-auto px-4 pt-8">
+                <img
+                  src={heroImage}
+                  alt={post.title}
+                  className="rounded-3xl w-full object-cover"
+                />
+              </section>
+            )}
+
+            {/* Content */}
+            <section className="container mx-auto px-4 pt-10">
+              <div className="max-w-4xl space-y-6">
+                {renderContent}
               </div>
             </section>
 
-            <section className="container mx-auto px-4 pt-10 md:pt-14">
-              <div className="max-w-4xl">
-                <article className="min-w-0">
-                  <div className="space-y-6">
-                    {renderContent}
-                  </div>
+            {/* Related Posts */}
+            {Array.isArray(relatedPosts) && relatedPosts.length > 0 && (
+              <section className="container mx-auto px-4 pt-14">
+                <h2 className="text-2xl font-bold text-foreground mb-6">
+                  More blog posts you may like
+                </h2>
 
-                  <div className="mt-12 border-t border-border pt-8">
-                    <div className="rounded-2xl bg-muted/30 p-6">
-                      <p className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                        Need help next?
-                      </p>
-                      <h2 className="mt-3 text-2xl font-bold text-foreground">
-                        Talk to our team about wishlist strategy and setup.
-                      </h2>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
-                        If you want help improving retention, saved-item flows, or
-                        conversion experience, contact us and we will guide you.
-                      </p>
-
-                      <div className="mt-5 flex flex-wrap gap-3">
-                        <Button asChild>
-                          <Link to="/contact">
-                            Contact us
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                        </Button>
-
-                        <Button asChild variant="outline">
-                          <Link to="/blog">Browse more blogs</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            {relatedPosts.length > 0 ? (
-              <section className="container mx-auto px-4 pt-14 md:pt-16">
-                <div className="space-y-4">
-                  <div className="max-w-5xl">
-                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                      Related reading
-                    </p>
-                    <h2 className="mt-2 text-2xl font-bold text-foreground md:text-3xl">
-                      More blog posts you may like
-                    </h2>
-                  </div>
-
-                  <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {relatedPosts.map((relatedPost) => (
-                      <BlogCard key={relatedPost.id} post={relatedPost} />
-                    ))}
-                  </div>
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {relatedPosts.map((item: any) => (
+                    <BlogCard key={item.id} post={item} />
+                  ))}
                 </div>
               </section>
-            ) : null}
+            )}
           </>
         )}
       </main>
