@@ -38,16 +38,20 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/blog" element={<BlogIndex />} />
-            <Route path="/blog/category/:slug" element={<BlogCategory />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/faq" element={<FAQPage />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/thank-you" element={<ThankYou />} />
+            {/* ✅ Layout Wrapper */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/category/:slug" element={<BlogCategory />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/thank-you" element={<ThankYou />} />
+            </Route>
+
+            {/* ❗ Keep outside layout */}
             <Route path="*" element={<NotFound />} />
-            <Route path="/faq" element={<FAQ />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
